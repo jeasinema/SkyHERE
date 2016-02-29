@@ -1,0 +1,118 @@
+程序组成：
+
+main.c 
+	init and boot
+		开机自动完成转向角度标定
+	遍历cmd的buffer
+	执行cmd
+		转向
+		前进
+		保持静止
+	全局定时中断，查询运动电机的转速和转向电机的转角，并赋予全局变量中
+
+delay.c
+	init
+	可用的延时函数
+
+delay.h
+
+
+motor.c 
+	init
+		定时器与IO
+	封装电机控制函数
+	电机使能
+		前进/后退 + 速度
+		转向，指定角度
+
+motor.h
+
+encoder.c
+	init
+		定时器与IO
+	
+	后期：
+		根据targetval产生pid控制，实现平滑变动
+	运动电机编码器转速自动更新 -》 全局变量
+	转向电机转向角度累计自动更新 -》 全局变量
+	  启动标定0方向，往后均为绝对角度，满360˚自动归零
+
+encoder.h
+
+mypid.c
+实现直行和转向的pid控制
+
+mypid.h
+
+communication.c
+	init
+		两个串口
+	串口中断查询，循环复制指令至cmd_ble中	
+
+communication.h
+
+usbserial.c
+	init
+		usb串口
+	串口中断查询，循环复制指令至cmd_usb中
+
+usbserial.h
+
+adj.c
+	init
+		两路ADC，三个按钮开关
+	按钮中断
+		中断函数留空
+	ADC中断查询赋值至全局变量中
+
+
+adj.h
+
+外设分配：
+运动电机：
+TIM4_CH1  PB6
+TIM4_CH2  PB7
+enable    PB13
+
+运动电机编码器：  注意上拉输入
+TIM3_CH1  PA6
+TIM3_CH2  PA7
+
+转向电机：
+TIM1_CH1  PA8
+TIM1_CH2  PA9
+enable    PB12
+
+转向电机编码器：
+TIM2_CH1  PA0  A
+TIM2_CH2  PA1  B	
+EXTI4 	  PA4  Z 完成一圈转动触发一次
+
+USART2_TX	PA2
+USART2_RX	PA3
+
+USART3_TX	PB10
+USART3_RX	PB11
+
+USBDM		PA11
+USBDP		PA12
+
+Button1
+EXTI14		PB14
+
+Button2
+EXTI15		PB15
+
+ADC1_IN8	PB0
+ADC1_IN9	PB1
+
+TODO:
+1.编写速度，角度查询函数，赋于全局变量中，位于main.c
+2.编写编码器中断时的行为
+3.编写Car_Turn
++1 Carturn使用编码器的中断实现
+-》遥控测试
+4.编写PID部分
+5.增加速度和角度的增量控制接口
+6.增加开机自动标定（作用：每转一周矫正一次计数器的值）
+

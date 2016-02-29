@@ -1,0 +1,10 @@
+*.o
+*.lss
+*.lst
+*.map
+*.sym
+*.bin
+*.elf
+.dep
+.tags
+.tags_sorted_by_file
