@@ -11,7 +11,7 @@
 
 
 //Omron Encoder counts for 4000 per spin
-#define Startup
+//#define Startup
 //#define angle_CNT   10000  //转一周的计数数
 
 int Car_Speed = 0;
@@ -126,7 +126,7 @@ void TIM2_Init()   //转向电机
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OC3Init(TIM2, &TIM_OCInitStructure);
 	TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Disable);//禁止 TIM_CCR1 寄存器的预装载使能
-	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);//中断使能 TIM_Cmd(TIM2, ENABLE); //开启定时器(即设置 CEN 位)
+	TIM_ITConfig(TIM2, TIM_IT_CC3, DISABLE);//中断使能 TIM_Cmd(TIM2, ENABLE); //开启定时器(即设置 CEN 位)
 
 
 
@@ -149,8 +149,8 @@ void TIM2_Init()   //转向电机
 
 	/* Enable the TIM2 Interrupt */
     NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);   
 }
@@ -179,8 +179,8 @@ void EXTI4_Encoder_Init()
       
     //NVIC中断控制配置  
     NVIC_exti.NVIC_IRQChannel = EXTI4_IRQn;  
-    NVIC_exti.NVIC_IRQChannelPreemptionPriority = 0x00;         //抢占优先级是2  
-    NVIC_exti.NVIC_IRQChannelSubPriority = 0x00;            //子优先级是2  
+    NVIC_exti.NVIC_IRQChannelPreemptionPriority = 0x01;         //抢占优先级是2  
+    NVIC_exti.NVIC_IRQChannelSubPriority = 0x01;            //子优先级是2  
     NVIC_exti.NVIC_IRQChannelCmd = ENABLE;  
     NVIC_Init(&NVIC_exti);        
 }
@@ -189,25 +189,25 @@ void EXTI4_IRQHandler(void)
 {
 	//USART1_printf(USART2, "%d\r\n",TIM2->CNT);
 	//启动自动完成编码器角度标定
-	#ifdef Startup
-	if (!Start_Due)
-	{
-		Car_Turn(0);
-		zero = TIM2->ARR - TIM2->CNT;     
-		TIM2 -> CNT = 0;
-		Start_Due = 1;
-		Delay(0xFFF);
-		Car_Turn_Angle(0);   //回零点
-	}
-	else
-	{
-		TIM2 -> CNT = 0;   //自动标0，防止编码器发生偏移
-	}
-	#endif 
+	// #ifdef Startup
+	// if (!Start_Due)
+	// {
+	// 	Car_Turn(0);
+	// 	zero = TIM2->ARR - TIM2->CNT;     
+	// 	TIM2 -> CNT = 0;
+	// 	Start_Due = 1;
+	// 	Delay(0xFFF);
+	// 	Car_Turn_Angle(0);   //回零点
+	// }
+	// else
+	// {
+	// 	TIM2 -> CNT = 0;   //自动标0，防止编码器发生偏移
+	// }
+	// #endif 
 
-	#ifndef Startup
-	TIM2 -> CNT = 0;    //手动标定
-	#endif
+	// #ifndef Startup
+	// TIM2 -> CNT = 0;    //手动标定
+	// #endif
 
 	EXTI_ClearITPendingBit(EXTI_Line4);
 }

@@ -8,6 +8,7 @@
 //#define PID
 #define Angle_Argv 50
 #define Max_Val   70
+#define less_val  9
 
 int Target_Speed = 0;
 float Target_Angle = 0;
@@ -141,9 +142,10 @@ void Car_Run(int speed)   //speed inrange(-100,100)
 	}
 	else 
 	{
+		TIM_SetCompare1(TIM4, 50);
+		TIM_SetCompare2(TIM4, 50);
+		Delay(0xFFF);
 		GPIO_ResetBits(GPIOB, GPIO_Pin_13);
-		TIM_SetCompare1(TIM4, 0);
-		TIM_SetCompare2(TIM4, 0);
 	}
 	#endif
 	#ifdef PID
@@ -162,7 +164,15 @@ void Car_Turn(float angle)     //顺逆旋转
 	// {
 	// 	angle_delta = -180;
 	// }
-	if (angle > 0)
+	if (angle == 0)
+	{
+		TIM_SetCompare1(TIM1, 100);
+		TIM_SetCompare2(TIM1, 100);
+		Delay(0xFFF);   //刹车时间
+		//GPIO_ResetBits(GPIOB, GPIO_Pin_12);
+
+	}
+	else if (angle > 0)
 	{
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
 		TIM_SetCompare1(TIM1, 100);
@@ -173,12 +183,6 @@ void Car_Turn(float angle)     //顺逆旋转
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
 		TIM_SetCompare1(TIM1, 0);
 		TIM_SetCompare2(TIM1, 100);
-	}
-	else 
-	{
-		GPIO_ResetBits(GPIOB, GPIO_Pin_12);
-		TIM_SetCompare1(TIM1, 0);
-		TIM_SetCompare2(TIM1, 0);
 	}
 	// Car_Angle = tmp;
 	// if (Car_Angle > 180)
@@ -195,50 +199,97 @@ void Car_Turn_Angle(float angle)
 {
 	int tmp;
 	#ifndef PID
-	if (((angle - Car_Angle) > 180) || ((angle - Car_Angle) < -180))
+	//确定目标值，初步计划少转一点
+	if (((angle - Car_Angle) > 180) || ((angle - Car_Angle) < -180))   //正常旋转方向不是最优
 	{
-		if ((angle - Car_Angle) > 0)
+		if ((angle - Car_Angle) > 0)   
 		{
-			tmp = (angle - Car_Angle - 360) / 360 * 4000 + TIM2->CNT;
+			angle = angle + less_val;
 		}
-		else
+		else							
 		{
-			tmp = (360 + angle - Car_Angle) / 360 * 4000 + TIM2->CNT;
+			angle = angle - less_val;
 		}
-
-		if(tmp < 0)
-		{
-			TIM2->CCR3 = 4000 - tmp; 
-		}
-		else if(tmp > 4000)
-		{
-			TIM2->CCR3 = tmp - 4000;
-		}
-		else
-		{
-			TIM2->CCR3 = tmp;
-		}
-		Car_Turn(-(angle - Car_Angle));   //正向反转，反向正转
-		TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
 	}
 	else
 	{
-		tmp = (angle - Car_Angle) / 360 * 4000 + TIM2->CNT;
-		if(tmp < 0)
+		if ((angle - Car_Angle) > 0)   
 		{
-			TIM2->CCR3 = 4000 - tmp; 
+			angle = angle - less_val;
 		}
-		else if(tmp > 4000)
+		else							
 		{
-			TIM2->CCR3 = tmp - 4000;
+			angle = angle + less_val;
 		}
-		else
-		{
-			TIM2->CCR3 = tmp;
-		}
-		Car_Turn(angle - Car_Angle);//正向正转，反向反转
-		TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
+		
 	}
+	if(angle >= 0)
+	{
+		TIM2->CCR3 = angle / 360 * 4000;
+	}
+	else
+	{
+		TIM2->CCR3 = 4000 + angle / 360 * 4000;
+	}
+	if (((angle - Car_Angle) > 180) || ((angle - Car_Angle) < -180))   //正常旋转方向不是最优
+	{
+		if ((angle - Car_Angle) > 0)   //本应顺时针，优化为逆时针
+		{
+			tmp = -1;
+		}
+		else							//本应逆时针，优化为顺时针
+		{
+			tmp = 1;
+		}
+	}
+	else
+	{
+		tmp = angle - Car_Angle;    //正常旋转方向
+	}
+	// if (((angle - Car_Angle) > 180) || ((angle - Car_Angle) < -180))
+	// {
+	// 	if ((angle - Car_Angle) > 0)
+	// 	{
+	// 		tmp = (angle - Car_Angle - 360) / 360 * 4000 + TIM2->CNT;
+	// 	}
+	// 	else
+	// 	{
+	// 		tmp = (360 + angle - Car_Angle) / 360 * 4000 + TIM2->CNT;
+	// 	}
+
+	// 	if(tmp < 0)
+	// 	{
+	// 		TIM2->CCR3 = 4000 - tmp; 
+	// 	}
+	// 	else if(tmp > 4000)
+	// 	{
+	// 		TIM2->CCR3 = tmp - 4000;
+	// 	}
+	// 	else
+	// 	{
+	// 		TIM2->CCR3 = tmp;
+	// 	}
+	// 	Car_Turn(-(angle - Car_Angle));   //正向反转，反向正转
+	// 	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
+	// }
+	// else
+	// {
+	// 	tmp = (angle - Car_Angle) / 360 * 4000 + TIM2->CNT;
+	// 	if(tmp < 0)
+	// 	{
+	// 		TIM2->CCR3 = 4000 - tmp; 
+	// 	}
+	// 	else if(tmp > 4000)
+	// 	{
+	// 		TIM2->CCR3 = tmp - 4000;
+	// 	}
+	// 	else
+	// 	{
+	// 		TIM2->CCR3 = tmp;
+	// 	}
+	Car_Turn(tmp);//正向正转，反向反转
+	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
+	//}
 	#endif
 	#ifdef PID
 	Target_Angle = angle;
@@ -250,9 +301,9 @@ void TIM2_IRQHandler()
 	 
 	//修改CCR3
 
-	TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);
 	Car_Turn(0);
 	TIM_ITConfig(TIM2, TIM_IT_CC3, DISABLE);
+	TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);
 
 	 // USART1_printf(USART2,"aaa\r\n");
 	 // USART1_printf(USART2,TIM2->CNT);

@@ -54,13 +54,26 @@ int main()
 		//USART1_printf(USART2,"speed=%d cnt=%d\r\n", (int)Car_Speed,TIM3->CNT);
 		//USART1_printf(USART2, Cmd_Ble);
 		//USART1_printf(USART2,"\r\n");
-		USART1_printf(USART2, "%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle);
+
+
+
+		USART1_printf(USART2, "%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,TIM2->CNT,TIM2->CCR3);
 		
 		//USART1_printf(USART2, "ok\r\n");
 		//USART_SendData(USART2,USART_ReceiveData(USART2));
+		
+
 		cmd_speed_pre = speed;
 		cmd_angle_pre = turn;
 		sscanf(Cmd_Ble, "#%d-%d*", &speed, &turn);
+		if (turn > 180)
+		{
+			turn = turn % 180;
+		}
+		else if (turn <= -180)
+		{
+			turn = turn % -180;
+		}
 
 		//USART1_printf(USART3,"aaaa");
 		//USART1_printf(USART3, "----%d----", speed);
@@ -74,6 +87,7 @@ int main()
 			Car_Run(speed);
 		}
 		//Car_Turn(1);
+
 	}    
 }
 
