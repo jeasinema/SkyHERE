@@ -188,26 +188,25 @@ void EXTI4_Encoder_Init()
 void EXTI4_IRQHandler(void)
 {
 	//USART1_printf(USART2, "%d\r\n",TIM2->CNT);
-	//启动自动完成编码器角度标定
-	// #ifdef Startup
-	// if (!Start_Due)
-	// {
-	// 	Car_Turn(0);
-	// 	zero = TIM2->ARR - TIM2->CNT;     
-	// 	TIM2 -> CNT = 0;
-	// 	Start_Due = 1;
-	// 	Delay(0xFFF);
-	// 	Car_Turn_Angle(0);   //回零点
-	// }
-	// else
-	// {
-	// 	TIM2 -> CNT = 0;   //自动标0，防止编码器发生偏移
-	// }
-	// #endif 
+	启动自动完成编码器角度标定
+	#ifdef Startup
+	if (!Start_Due)
+	{
+		Car_Turn(0);
+		zero = TIM2->CNT;     
+		Start_Due = 1;
+		Delay(0xFFF);
+		Car_Turn_Angle(0);   //回零点
+	}
+	else
+	{
+		TIM2 -> CNT = zero;   //自动标0，防止编码器发生偏移
+	}
+	#endif 
 
-	// #ifndef Startup
-	// TIM2 -> CNT = 0;    //手动标定
-	// #endif
+	#ifndef Startup
+	TIM2 -> CNT = zero;    //手动标定
+	#endif
 
 	EXTI_ClearITPendingBit(EXTI_Line4);
 }

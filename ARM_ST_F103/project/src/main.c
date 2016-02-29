@@ -35,7 +35,7 @@ int main()
 	Motor_Init();
 	SysTick_Init(72);
 	Car_Run(0);
-	Car_Turn(0);
+	Car_Turn(1);
 
 	// while(!Start_Due)
 	// {
