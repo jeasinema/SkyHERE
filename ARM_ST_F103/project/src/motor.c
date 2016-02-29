@@ -7,7 +7,7 @@
 
 //#define PID
 #define Angle_Argv 50
-#define Max_Val   70
+#define Max_Val   100
 #define less_val  9
 
 int Target_Speed = 0;

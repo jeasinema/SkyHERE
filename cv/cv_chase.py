@@ -2,14 +2,23 @@
 import cv2
 import numpy as np
 import time
+import sys
+import serial
 
-cap = cv2.VideoCapture(0)
+car = serial.Serial("/dev/tty",9600)
+cap = cv2.VideoCapture(1)
 color = [0, 0]
 flag = True
 flag1 = True
 count = 0
 mark = 0
+
+speed = 0
+angle = 0
+max_val = 80
+
 #TODO:
+
 #1.提高速度，目前增加抓取后速度太慢
 #2.矫正畸变
 #(1)显示图片：频率约为10Hz
@@ -18,6 +27,18 @@ mark = 0
 #3.改至HSV色系处理
 mtx = np.load('mtx.npy')
 dist = np.load('dist.npy')
+def car_run(speed,angle):
+    global car
+    global max_val
+    if (speed > max_val):
+        speed = max_val
+    if (speed < -max_val):
+        speed = -max_val
+    car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")
+    print ("#"+(str)((int)(speed))+"-"+(str)((int)(angle))+"*")
+    
+
+
 def select_point(event,x,y,flags,param): 
     #local variable as default, so we should add the global tag
     global flag
@@ -76,7 +97,7 @@ while(True):
     #Attention! cannot use numpy.resize!!
     
     # 转换到 HSV 
-    c = cv2.resize(a, (640,480))
+    c = cv2.resize(a, (80,60))
     c = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
     
     
@@ -100,7 +121,13 @@ while(True):
     
     mask = cv2.inRange(c, lower_green , upper_green)
     c = np.float32(c)
-    cv2.circle(mask, (color[0], color[1]), 10, (0, 0, 255), 1)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, (21,21))
+    #TODO:20160229
+    #想办法解决tag离开视野后杂色干扰的问题
+
+
+
+    #cv2.circle(mask, (color[0], color[1]), 10, (0, 0, 255), 1)
     ## 对原图像和掩模进行位运算 
     #res = cv2.bitwise_and(a, a, mask=mask)
     ## 显示图像 
@@ -118,16 +145,51 @@ while(True):
     else:
         x = y = 0
     
-    print  time.clock(), [x*8, y*8],a_hsv[color[1], color[1], :]
+    #print  time.clock(), [x, y]
     #print [x*8,y*8]
-    if flag1:    
-        if x < 624 and y < 464:
-            cv2.circle(a, ((int)(x*8), (int)(y*8)), 50, (255, 0, 0), 0)
-        cv2.imshow('mask', mask)
-        mark = mark + 1
-        cv2.imwrite("save/"+(str)(mark)+'.png', mask)
-        cv2.imshow('image', a)
-        cv2.waitKey(1)
+    
+
+    x = x * 8
+    y = y * 8
+    #output control data
+    length = np.linalg.norm([x-320,y-240])
+    if (length < 80):
+        speed = 0
+        angle = 0
+    else:
+        speed = length / 3;
+        if x == 320:
+            if y > 240:
+                angle = 180
+            else:
+                angle = 0
+        elif y == 240:
+            if x > 320:
+                angle = 90
+            else:
+                angle = -90
+        else:        
+            angle = np.arctan(((float)(x)-320)/(240-(float)(y)))
+            angle = (float)(angle) / 3.1415926 * 180
+            if (y > 240):
+                if (x > 320):
+                    angle = 180 + angle
+                else:
+                    angle = -180 + angle
+
+    print angle,length, x, y
+    car_run(speed , angle)
+
+    #car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")l
+
+
+        #if x < 624 and y < 464:
+        #    cv2.circle(a, ((int)(x*8), (int)(y*8)), 50, (255, 0, 0), 0)
+    cv2.imshow('mask', mask)
+        #mark = mark + 1
+        #cv2.imwrite("save/"+(str)(mark)+'.png', mask)
+        #cv2.imshow('image', a)
+    cv2.waitKey(1)
     #print time.clock()
     if cv2.waitKey(10) & 0xFF == ord('o'):
         flag1 = False
