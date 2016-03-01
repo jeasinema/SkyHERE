@@ -5,17 +5,18 @@ import time
 import sys
 import serial
 
-car = serial.Serial("/dev/tty",9600)
-cap = cv2.VideoCapture(1)
+car = serial.Serial("/dev/ttyUSB1",9600)
+cap = cv2.VideoCapture(0)
 color = [0, 0]
 flag = True
 flag1 = True
 count = 0
 mark = 0
 
+
 speed = 0
 angle = 0
-max_val = 80
+max_val = 40
 
 #TODO:
 
@@ -30,6 +31,7 @@ dist = np.load('dist.npy')
 def car_run(speed,angle):
     global car
     global max_val
+    angle = -angle   #解决视野相反的问题
     if (speed > max_val):
         speed = max_val
     if (speed < -max_val):
@@ -121,7 +123,7 @@ while(True):
     
     mask = cv2.inRange(c, lower_green , upper_green)
     c = np.float32(c)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, (21,21))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
     #TODO:20160229
     #想办法解决tag离开视野后杂色干扰的问题
 
@@ -143,7 +145,8 @@ while(True):
         x= (int)((float)(ret['m10'])/(float)(ret['m00']))
         y= (int)((float)(ret['m01'])/(float)(ret['m00']))
     else:
-        x = y = 0
+        x = 40
+	y = 30
     
     #print  time.clock(), [x, y]
     #print [x*8,y*8]
@@ -186,7 +189,11 @@ while(True):
         #if x < 624 and y < 464:
         #    cv2.circle(a, ((int)(x*8), (int)(y*8)), 50, (255, 0, 0), 0)
     cv2.imshow('mask', mask)
-        #mark = mark + 1
+    if cv2.waitKey(1) & 0xFF == ord("s"):
+	cv2.imwrite((str)(count)+".png",mask)
+	cv2.imwrite((str)(count)+"origin.png",a) 
+        count = count + 1
+	#mark = mark + 1
         #cv2.imwrite("save/"+(str)(mark)+'.png', mask)
         #cv2.imshow('image', a)
     cv2.waitKey(1)
