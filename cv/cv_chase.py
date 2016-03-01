@@ -178,7 +178,7 @@ while(True):
                     angle = -180 + angle
 
     print angle,length, x, y
-    #car_run(speed , angle)
+    car_run(speed , angle)
 
     #car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")l
 
