@@ -3,6 +3,7 @@
 #include "delay.h"
 #include "encoder.h"
 #include "motor.h"
+#include "pid.h"
 #include "communication.h"
 #include "core_cm3.h"
 #include <stdio.h>
@@ -22,6 +23,11 @@ float angle_tmp=0;
 int cmd_speed_pre = 0;
 int cmd_angle_pre = 0;
 
+
+//PID控制的中间变量
+int run_output = 0;
+int turn_output = 0;
+
 void Speed_Query(void);
 void Angle_Query(void);
 void SysTick_Init(uint8_t SYSCLK);
@@ -34,8 +40,8 @@ int main()
 	//while(1);
 	Motor_Init();
 	SysTick_Init(72);
-	Car_Run(0);
-	Car_Turn(1);
+	Car_Run_Speed(0);
+	Car_Turn_Speed(0);   //调用底层函数制动
 
 	// while(!Start_Due)
 	// {
@@ -57,8 +63,10 @@ int main()
 
 
 
-		USART1_printf(USART2, "%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,TIM2->CNT,TIM2->CCR3);
+		//USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,TIM2->CNT,TIM2->CCR3,Motor_Run.PWM,Motor_Turn.PWM);
 		
+		USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,Motor_Run.PWM,Motor_Turn.PWM,Motor_Run.targetValue,Motor_Turn.targetValue);
+
 		//USART1_printf(USART2, "ok\r\n");
 		//USART_SendData(USART2,USART_ReceiveData(USART2));
 		
@@ -95,10 +103,14 @@ void Speed_Query()
 {
 	speed_pre = speed_cur;
 	speed_cur = TIM3 -> CNT;
-	if ((speed_cur - speed_pre) < -7000)     //发生溢出
+	if ((speed_cur - speed_pre) < -6000)     //发生上溢
 	{
 		Car_Speed =  (8000 - speed_pre + speed_cur) >> speed_fac ;   //TIM3的计数值为8000
 	}  
+	else if ((speed_cur - speed_pre) > 6000)     //发生下溢
+	{
+		Car_Speed =  (8000 - speed_cur + speed_pre) >> speed_fac ; 
+	}
 	else
 	{
 		Car_Speed =  (speed_cur - speed_pre) >> speed_fac ;
@@ -136,6 +148,13 @@ void SysTick_Handler()
 	
 	Speed_Query();
 	Angle_Query();
+	
+
+	//calcPID(&Motor_Run, Car_Speed);
+	calcPID(&Motor_Turn, Car_Angle);
+	//Car_Run_Speed(Motor_Run.PWM);
+	Car_Turn_Speed(Motor_Turn.PWM);
+
 	//SysTick->VAL = SysTick->LOAD;   //清空VAL，初始化Systick后可有可无
 }
 

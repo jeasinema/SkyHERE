@@ -4,14 +4,14 @@
 #include "stm32f10x_tim.h"
 #include "delay.h"
 #include "encoder.h"
+#include "pid.h"
 
-//#define PID
-#define Angle_Argv 50
-#define Max_Val   100
-#define less_val  9
+#define PID
+#define Max_Val   4000
+#define less_val  9    //少转的角度
 
-int Target_Speed = 0;
-float Target_Angle = 0;
+//int Target_Speed = 0;
+//float Target_Angle = 0;
 
 int abs(int a)
 {
@@ -91,7 +91,7 @@ void TIM1_Init(){
 		TIM_DeInit(TIM1);
 		TIM_TimeBaseStructure.TIM_Prescaler = 0xFF;//8????
 		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;//??????
-		TIM_TimeBaseStructure.TIM_Period = 100;//???????4000
+		TIM_TimeBaseStructure.TIM_Period = 4000;//???????4000
 		TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;//??????1
 
 		TIM_TimeBaseInit(TIM1,&TIM_TimeBaseStructure);
@@ -123,11 +123,12 @@ void TIM1_Init(){
 
 void Car_Run(int speed)   //speed inrange(-100,100)
 {
+	speed = - speed;
 	if(speed > Max_Val)
 		speed = Max_Val;
 	if(speed < -Max_Val)
 		speed = -Max_Val;
-	#ifndef PID
+	//#ifndef PID
 	if (speed > 0)
 	{
 		GPIO_SetBits(GPIOB, GPIO_Pin_13);
@@ -147,27 +148,20 @@ void Car_Run(int speed)   //speed inrange(-100,100)
 		Delay(0xFFF);
 		GPIO_ResetBits(GPIOB, GPIO_Pin_13);
 	}
-	#endif
-	#ifdef PID
-	Target_Speed = speed;
-	#endif
+	//#endif
+
+	// #ifdef PID
+	// Motor_Run.targetValue = speed;
+	// #endif
 }
 
 
 void Car_Turn(float angle)     //顺逆旋转
 {
-	// if (angle_delta > 180)
-	// {
-	// 	angle_delta = 180;
-	// }
-	// else if (angle_delta < -180)
-	// {
-	// 	angle_delta = -180;
-	// }
 	if (angle == 0)
 	{
-		TIM_SetCompare1(TIM1, 100);
-		TIM_SetCompare2(TIM1, 100);
+		TIM_SetCompare1(TIM1, 4000);
+		TIM_SetCompare2(TIM1, 4000);
 		Delay(0xFFF);   //刹车时间
 		//GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 
@@ -175,29 +169,21 @@ void Car_Turn(float angle)     //顺逆旋转
 	else if (angle > 0)
 	{
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
-		TIM_SetCompare1(TIM1, 100);
+		TIM_SetCompare1(TIM1, 4000);
 		TIM_SetCompare2(TIM1, 0);
 	}
 	else if (angle < 0)
 	{
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
 		TIM_SetCompare1(TIM1, 0);
-		TIM_SetCompare2(TIM1, 100);
+		TIM_SetCompare2(TIM1, 4000);
 	}
-	// Car_Angle = tmp;
-	// if (Car_Angle > 180)
-	// {
-	// 	Car_Angle = Car_Angle - 360;
-	// }
-	// else if (Car_Angle < -180)
-	// {
-	// 	Car_Angle = Car_Angle + 360;
-	// }
 }
 
 void Car_Turn_Angle(float angle)
 {
 	int tmp;
+
 	#ifndef PID
 	//确定目标值，初步计划少转一点
 	if (((angle - Car_Angle) > 180) || ((angle - Car_Angle) < -180))   //正常旋转方向不是最优
@@ -246,54 +232,80 @@ void Car_Turn_Angle(float angle)
 	{
 		tmp = angle - Car_Angle;    //正常旋转方向
 	}
-	// if (((angle - Car_Angle) > 180) || ((angle - Car_Angle) < -180))
-	// {
-	// 	if ((angle - Car_Angle) > 0)
-	// 	{
-	// 		tmp = (angle - Car_Angle - 360) / 360 * 4000 + TIM2->CNT;
-	// 	}
-	// 	else
-	// 	{
-	// 		tmp = (360 + angle - Car_Angle) / 360 * 4000 + TIM2->CNT;
-	// 	}
-
-	// 	if(tmp < 0)
-	// 	{
-	// 		TIM2->CCR3 = 4000 - tmp; 
-	// 	}
-	// 	else if(tmp > 4000)
-	// 	{
-	// 		TIM2->CCR3 = tmp - 4000;
-	// 	}
-	// 	else
-	// 	{
-	// 		TIM2->CCR3 = tmp;
-	// 	}
-	// 	Car_Turn(-(angle - Car_Angle));   //正向反转，反向正转
-	// 	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
-	// }
-	// else
-	// {
-	// 	tmp = (angle - Car_Angle) / 360 * 4000 + TIM2->CNT;
-	// 	if(tmp < 0)
-	// 	{
-	// 		TIM2->CCR3 = 4000 - tmp; 
-	// 	}
-	// 	else if(tmp > 4000)
-	// 	{
-	// 		TIM2->CCR3 = tmp - 4000;
-	// 	}
-	// 	else
-	// 	{
-	// 		TIM2->CCR3 = tmp;
-	// 	}
 	Car_Turn(tmp);//正向正转，反向反转
 	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
-	//}
 	#endif
+
 	#ifdef PID
-	Target_Angle = angle;
+	Motor_Turn.targetValue = angle;
 	#endif
+}
+
+
+//为保证向下兼容，PID调用此函数
+void Car_Turn_Speed(int speed)
+{
+	//再次限幅
+	if (speed > Max_Val)
+	{
+		speed = Max_Val;
+	}
+	else if(speed < -Max_Val)
+	{
+		speed = -Max_Val;
+	}
+
+	if(speed > 0)
+	{
+		GPIO_SetBits(GPIOB, GPIO_Pin_12);
+		TIM_SetCompare1(TIM1, speed);
+		TIM_SetCompare2(TIM1, 0);
+	}
+	else if (speed < 0)
+	{
+		GPIO_SetBits(GPIOB, GPIO_Pin_12);
+		TIM_SetCompare1(TIM1, 0);
+		TIM_SetCompare2(TIM1, -speed);
+	}
+	else 
+	{
+		TIM_SetCompare1(TIM1, 4000);
+		TIM_SetCompare2(TIM1, 4000);
+		Delay(0xFF);   //刹车时间
+		GPIO_ResetBits(GPIOB, GPIO_Pin_12);
+	}
+}
+
+void Car_Run_Speed(int speed)
+{
+	if (speed > 100)
+	{
+		speed = 100;
+	}
+	else if(speed < -100)
+	{
+		speed = -100;
+	}
+
+	if(speed > 0)
+	{
+		GPIO_SetBits(GPIOB, GPIO_Pin_13);
+		TIM_SetCompare1(TIM4, speed);
+		TIM_SetCompare2(TIM4, 0);
+	}
+	else if (speed < 0)
+	{
+		GPIO_SetBits(GPIOB, GPIO_Pin_13);
+		TIM_SetCompare1(TIM4, 0);
+		TIM_SetCompare2(TIM4, -speed);
+	}
+	else 
+	{
+		TIM_SetCompare1(TIM4, 100);
+		TIM_SetCompare2(TIM4, 100);
+		Delay(0xFF);   //刹车时间
+		GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+	}
 }
 
 void TIM2_IRQHandler()
@@ -301,8 +313,8 @@ void TIM2_IRQHandler()
 	 
 	//修改CCR3
 
-	Car_Turn(0);
-	TIM_ITConfig(TIM2, TIM_IT_CC3, DISABLE);
+	// Car_Turn(0);
+	// TIM_ITConfig(TIM2, TIM_IT_CC3, DISABLE);
 	TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);
 
 	 // USART1_printf(USART2,"aaa\r\n");
