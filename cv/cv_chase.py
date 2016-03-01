@@ -13,6 +13,11 @@ flag1 = True
 count = 0
 mark = 0
 
+#read in status:
+car_speed = 0
+car_angle = 0
+
+
 
 speed = 0
 angle = 0
@@ -73,6 +78,15 @@ while(flag):
     except IOError:
         continue
 #recognize the color
+
+#read in the status
+info = car.read()
+info = info[1:]
+info = info[:-1]
+info.spilt('*')
+car_speed = (int)(info[0])
+car_angle = (int)(info[1])
+
 green = frame[color[1], color[0], :]
 #green = [42,144,78]
 print green
@@ -180,7 +194,8 @@ while(True):
                 else:
                     angle = -180 + angle
 
-    print angle,length, x, y
+    #print angle,length, x, y
+    print car_speed,car_angle
     car_run(speed , angle)
 
     #car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")l
