@@ -188,12 +188,12 @@ void EXTI4_Encoder_Init()
 void EXTI4_IRQHandler(void)
 {
 	//USART1_printf(USART2, "%d\r\n",TIM2->CNT);
-	启动自动完成编码器角度标定
+	//启动自动完成编码器角度标定  (由于转向电机不能很好的伺服，故该操作效果不明显)
 	#ifdef Startup
 	if (!Start_Due)
 	{
-		Car_Turn(0);
-		zero = TIM2->CNT;     
+		zero = TIM2->CNT; 
+		Car_Turn(0);  
 		Start_Due = 1;
 		Delay(0xFFF);
 		Car_Turn_Angle(0);   //回零点
