@@ -101,10 +101,8 @@ while(True):
     a_hsv = cv2.cvtColor(a, cv2.COLOR_BGR2HSV)
     cv2.putText(a,'HSV' + (str)(color) + (str)(a_hsv[color[1], color[0], :]),(color[0], color[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5 ,(255, 0, 0))
     
-    print "++++"
     info = data.readline()
-    print "info"+info
-    if len(info) > 5 and info[0]=="#":
+    if len(info) >= 5 and info[0]=="#":
 	info = info[1:]
 	info = info[:-3]
 	info = info.split('*')
