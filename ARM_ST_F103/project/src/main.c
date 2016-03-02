@@ -65,8 +65,8 @@ int main()
 
 		//USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,TIM2->CNT,TIM2->CCR3,Motor_Run.PWM,Motor_Turn.PWM);
 		
-		USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,Motor_Run.PWM,Motor_Turn.PWM,Motor_Run.targetValue,Motor_Turn.targetValue);
-		USART1_printf(USART3, "#%d*%d&\r\n", Car_Speed, (int)Car_Angle);
+		//USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,Motor_Run.PWM,Motor_Turn.PWM,Motor_Run.targetValue,Motor_Turn.targetValue);
+		USART1_printf(USART2, "#%d*%d&\r\n", Car_Speed, (int)Car_Angle);
 		//USART1_printf(USART2, "ok\r\n");
 		//USART_SendData(USART2,USART_ReceiveData(USART2));
 		

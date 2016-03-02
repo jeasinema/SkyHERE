@@ -5,8 +5,10 @@ import time
 import sys
 import serial
 
-car = serial.Serial("/dev/ttyUSB1",9600)
+car = serial.Serial("/dev/ttyUSB0",9600)
+data = serial.Serial("/dev/ttyUSB1",115200)
 cap = cv2.VideoCapture(0)
+
 color = [0, 0]
 flag = True
 flag1 = True
@@ -80,13 +82,6 @@ while(flag):
 #recognize the color
 
 #read in the status
-info = car.read()
-info = info[1:]
-info = info[:-1]
-info.spilt('*')
-car_speed = (int)(info[0])
-car_angle = (int)(info[1])
-
 green = frame[color[1], color[0], :]
 #green = [42,144,78]
 print green
@@ -105,6 +100,17 @@ while(True):
     cv2.circle(a, (color[0], color[1]), 10, (255, 0, 0), 0)
     a_hsv = cv2.cvtColor(a, cv2.COLOR_BGR2HSV)
     cv2.putText(a,'HSV' + (str)(color) + (str)(a_hsv[color[1], color[0], :]),(color[0], color[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5 ,(255, 0, 0))
+    
+    print "++++"
+    info = data.readline()
+    print "info"+info
+    if len(info) > 5 and info[0]=="#":
+	info = info[1:]
+	info = info[:-3]
+	info = info.split('*')
+	car_speed = (int)(info[0])
+	car_angle = (int)(info[1])
+
 
     #a = cv2.imread('mvtest2.png')
     #cv2.imshow('test', a)
@@ -195,8 +201,8 @@ while(True):
                     angle = -180 + angle
 
     #print angle,length, x, y
-    print car_speed,car_angle
-    car_run(speed , angle)
+    #print info,car_speed,car_angle
+    #car_run(speed , angle)
 
     #car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")l
 
@@ -204,10 +210,6 @@ while(True):
         #if x < 624 and y < 464:
         #    cv2.circle(a, ((int)(x*8), (int)(y*8)), 50, (255, 0, 0), 0)
     cv2.imshow('mask', mask)
-    if cv2.waitKey(1) & 0xFF == ord("s"):
-	cv2.imwrite((str)(count)+".png",mask)
-	cv2.imwrite((str)(count)+"origin.png",a) 
-        count = count + 1
 	#mark = mark + 1
         #cv2.imwrite("save/"+(str)(mark)+'.png', mask)
         #cv2.imshow('image', a)
