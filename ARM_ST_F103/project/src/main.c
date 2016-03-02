@@ -11,6 +11,9 @@
 
 #define BIT(x)	(1 << (x))
 #define speed_fac   1  //由差值计算速度时的系数
+#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
+
+
 
 int speed;
 int turn;
@@ -83,6 +86,10 @@ int main()
 			turn = turn % -180;
 		}
 
+
+		#ifdef BOTTOMIMPROVE
+		
+		#endif
 		//USART1_printf(USART3,"aaaa");
 		//USART1_printf(USART3, "----%d----", speed);
 		//USART_SendData(USART3,turn);  
@@ -149,11 +156,11 @@ void SysTick_Handler()
 	Speed_Query();
 	Angle_Query();
 	
-
+    //运动电机仍采用传统控制方式
 	//calcPID(&Motor_Run, Car_Speed);
 	calcPID(&Motor_Turn, Car_Angle);
 	//Car_Run_Speed(Motor_Run.PWM);
-	Car_Turn_Speed(Motor_Turn.PWM);
+	Car_Turn_Speed(Motor_Turn.PWM);   
 
 	//SysTick->VAL = SysTick->LOAD;   //清空VAL，初始化Systick后可有可无
 }

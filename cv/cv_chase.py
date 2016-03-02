@@ -6,7 +6,7 @@ import sys
 import serial
 
 car = serial.Serial("/dev/ttyUSB0",9600)
-data = serial.Serial("/dev/ttyUSB1",115200)
+data = serial.Serial("/dev/ttyUSB0",115200)
 cap = cv2.VideoCapture(0)
 
 color = [0, 0]
@@ -43,12 +43,44 @@ def car_run(speed,angle):
         speed = max_val
     if (speed < -max_val):
         speed = -max_val
+    #转向优化
+    if is_close(car_angle,angle):
+        angle = angle
+    else:
+        angle = angle + 180
+        speed = -speed
     car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")
     print ("#"+(str)((int)(speed))+"-"+(str)((int)(angle))+"*")
     
+def is_close(src, dst):
+    #judge if we need to change the angle  
+    #转化为连续刻度
+    if src < 0:
+        src = src + 360
+    if dst < 0:
+        dst = dst + 360
+    #正常情况
+    if np.absolute(dst - src) <= 90:
+        return True
+    #两种异常
+    elif dst - src + 360 <= 90:
+        return True
+    elif src - dst + 360 <= 90:
+        return True
+    else:
+        return False
+    
+   # if src + 90 > 180:  #上限上溢
+   #     up_edg = src + 90 -360
+   # else:
+   #     up_edg = src + 90
+   # if src - 90 < -180: #下限下溢
+   #     down_edg = src - 90 + 360
+   # else:
+   #     down_edg =  src - 90
+    
 
-
-def select_point(event,x,y,flags,param): 
+def select_point(event, x, y, flags, param): 
     #local variable as default, so we should add the global tag
     global flag
     global color 

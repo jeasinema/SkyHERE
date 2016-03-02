@@ -9,6 +9,7 @@
 #define PID
 #define Max_Val   4000
 #define less_val  9    //少转的角度
+#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
 
 //int Target_Speed = 0;
 //float Target_Angle = 0;
@@ -235,8 +236,9 @@ void Car_Turn_Angle(float angle)
 	Car_Turn(tmp);//正向正转，反向反转
 	TIM_ITConfig(TIM2, TIM_IT_CC3, ENABLE);
 	#endif
-
+	
 	#ifdef PID
+	//串口调节不畅，底层直接实现转角优化
 	Motor_Turn.targetValue = angle;
 	#endif
 }
