@@ -7,7 +7,7 @@ with serial.Serial('/dev/ttyUSB0',115200)  as ser:
         data = ser.readline()
         print data
 	#print len(data)
-	time.sleep(0.1)
+	time.sleep(0.001)
         if len(data) >= 5:
             if (data[0] == '#'):
                 data = data[1:]
@@ -17,11 +17,11 @@ with serial.Serial('/dev/ttyUSB0',115200)  as ser:
                 ser.flush
 	    else:
 		ser.close()
-		time.sleep(0.1)
+		time.sleep(0.001)
 		ser.open()
 	else:
 	    ser.close()
-	    time.sleep(0.1)
+	    time.sleep(0.001)
 	    ser.open()
 		
 	
