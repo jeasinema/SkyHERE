@@ -11,7 +11,7 @@
 
 #define BIT(x)	(1 << (x))
 #define speed_fac   1  //由差值计算速度时的系数
-//#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
+#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
 
 
 
@@ -96,6 +96,14 @@ int main()
 		else
 			turn = turn + 180;
 			speed = -speed;
+		if (turn > 180)
+		{
+			turn = turn % 180;
+		}
+		else if (turn <= -180)
+		{
+			turn = turn % -180;
+		}
 
 		Car_Turn_Angle(turn);	
 		Car_Run(speed);
