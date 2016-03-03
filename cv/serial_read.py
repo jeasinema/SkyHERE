@@ -13,7 +13,7 @@ with serial.Serial('/dev/ttyUSB0',115200)  as ser:
                 data = data[1:]
                 data = data[:-3]
                 data = data.split('*')
-                print data, data[0], data[1]
+                print data, (int)(data[0]), (int)(data[1])
                 ser.flush
 	    else:
 		ser.close()

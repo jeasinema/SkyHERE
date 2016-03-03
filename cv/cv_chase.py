@@ -5,7 +5,7 @@ import time
 import sys
 import serial
 
-car = serial.Serial("/dev/ttyUSB1",9600)
+car = serial.Serial("/dev/ttyUSB0",9600)
 data = serial.Serial("/dev/ttyUSB0",115200)
 cap = cv2.VideoCapture(0)
 
@@ -135,12 +135,13 @@ while(True):
     
     info = data.readline()
     time.sleep(0.001)
-    if len(info) >= 5 and info[0]=="#":
+    if len(info) >= 5 and info[0]=="#" and info[-1]=="\n" and info[-2]=="&":
 	info = info[1:]
 	info = info[:-3]
 	info = info.split('*')
 	car_speed = (int)(info[0])
 	car_angle = (int)(info[1])
+	#print car_speed, car_angle
     else:
         data.close()
         time.sleep(0.001)
@@ -237,7 +238,7 @@ while(True):
 
     #print angle,length, x, y
     #print info,car_speed,car_angle
-    #car_run(speed , angle)
+    car_run(speed , angle)
 
     #car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")l
 
