@@ -5,7 +5,7 @@ import time
 import sys
 import serial
 
-car = serial.Serial("/dev/ttyUSB0",9600)
+car = serial.Serial("/dev/ttyUSB1",9600)
 data = serial.Serial("/dev/ttyUSB0",115200)
 cap = cv2.VideoCapture(0)
 
@@ -18,8 +18,6 @@ mark = 0
 #read in status:
 car_speed = 0
 car_angle = 0
-
-
 
 speed = 0
 angle = 0
@@ -38,6 +36,8 @@ dist = np.load('dist.npy')
 def car_run(speed,angle):
     global car
     global max_val
+    global car_angle
+    global car_speed
     angle = -angle   #解决视野相反的问题
     if (speed > max_val):
         speed = max_val
@@ -50,7 +50,8 @@ def car_run(speed,angle):
         angle = angle + 180
         speed = -speed
     car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")
-    print ("#"+(str)((int)(speed))+"-"+(str)((int)(angle))+"*")
+    print car_angle, car_speed
+    #print ("#"+(str)((int)(speed))+"-"+(str)((int)(angle))+"*")
     
 def is_close(src, dst):
     #judge if we need to change the angle  
@@ -135,12 +136,13 @@ while(True):
     
     info = data.readline()
     time.sleep(0.001)
-    if len(info) >= 5 and info[0]=="#" and info[-1]=="\n" and info[-2]=="&":
+    if len(info) >= 5 and info[0]=="#":
 	info = info[1:]
 	info = info[:-3]
 	info = info.split('*')
-	car_speed = (int)(info[0])
-	car_angle = (int)(info[1])
+	if len(info[0]) < 2 and len(info[1]) <= 4:
+		car_speed = (int)(info[0])
+		car_angle = (int)(info[1])
 	#print car_speed, car_angle
     else:
         data.close()
