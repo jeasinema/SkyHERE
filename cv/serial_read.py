@@ -2,10 +2,12 @@ import serial
 import sys
 import time
 
-with serial.Serial('/dev/ttyUSB0',9600)  as ser:
+with serial.Serial('/dev/ttyUSB0',115200)  as ser:
     while(True):
-        data = ser.read(30)
-        print (str)(data)
+        data = ser.read(7)
+        print data
+	#print len(data)
+	time.sleep(0.1)
         if len(data) >= 5:
             if (data[0] == '#'):
                 data = data[1:]
@@ -13,4 +15,13 @@ with serial.Serial('/dev/ttyUSB0',9600)  as ser:
                 data = data.split('*')
                 print data, data[0], data[1]
                 ser.flush
-                
+	    else:
+		ser.close()
+		time.sleep(0.1)
+		ser.open()
+	else:
+	    ser.close()
+	    time.sleep(0.1)
+	    ser.open()
+		
+	
