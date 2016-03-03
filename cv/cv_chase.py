@@ -5,8 +5,8 @@ import time
 import sys
 import serial
 
-car = serial.Serial("/dev/ttyUSB1",9600)
-data = serial.Serial("/dev/ttyUSB0",115200)
+car = serial.Serial("/dev/ttyUSB0",9600)
+data = serial.Serial("/dev/ttyUSB1",115200)
 cap = cv2.VideoCapture(0)
 
 color = [0, 0]
@@ -134,20 +134,20 @@ while(True):
     a_hsv = cv2.cvtColor(a, cv2.COLOR_BGR2HSV)
     cv2.putText(a,'HSV' + (str)(color) + (str)(a_hsv[color[1], color[0], :]),(color[0], color[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5 ,(255, 0, 0))
     
-    info = data.readline()
-    time.sleep(0.001)
-    if len(info) >= 5 and info[0]=="#":
-	info = info[1:]
-	info = info[:-3]
-	info = info.split('*')
-	if len(info[0]) < 2 and len(info[1]) <= 4:
-		car_speed = (int)(info[0])
-		car_angle = (int)(info[1])
+    #info = data.readline()
+    #time.sleep(0.001)
+    #if len(info) >= 5 and info[0]=="#":
+#	info = info[1:]
+#	info = info[:-3]
+#	info = info.split('*')
+#	if len(info[0]) < 2 and len(info[1]) <= 4:
+#		car_speed = (int)(info[0])
+#		car_angle = (int)(info[1])
 	#print car_speed, car_angle
-    else:
-        data.close()
-        time.sleep(0.001)
-        data.open()
+#    else:
+#        data.close()
+#        time.sleep(0.001)
+#        data.open()
 
 
     #a = cv2.imread('mvtest2.png')
