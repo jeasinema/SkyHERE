@@ -4,7 +4,7 @@ import time
 
 with serial.Serial('/dev/ttyUSB0',115200)  as ser:
     while(True):
-        data = ser.read(7)
+        data = ser.readline()
         print data
 	#print len(data)
 	time.sleep(0.1)
