@@ -52,6 +52,7 @@ void USART2_Config(void)
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;//×Ö3¤Îa8Î»êy¾Y¸ñê½
     USART_InitStructure.USART_StopBits = USART_StopBits_1;     //ò»¸öí￡Ö1Î»
     USART_InitStructure.USART_Parity = USART_Parity_No;        //ÎTÆæÅ¼D￡ÑéÎ»
+    
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//Yá÷¿ØÖÆ
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//êÕ·￠Ä￡ê½   
     

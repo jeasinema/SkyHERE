@@ -11,7 +11,8 @@
 
 #define BIT(x)	(1 << (x))
 #define speed_fac   1  //由差值计算速度时的系数
-#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
+//#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
+
 
 
 
@@ -34,6 +35,7 @@ int turn_output = 0;
 void Speed_Query(void);
 void Angle_Query(void);
 void SysTick_Init(uint8_t SYSCLK);
+int is_close(int src, int dst);
 
 int main()
 {
@@ -87,9 +89,21 @@ int main()
 		}
 
 
-		#ifdef BOTTOMIMPROVE
+		#ifdef BOTTOMIMPROVE  
+		//转向优化
+		if (is_close(Car_Angle,turn))
+			turn = turn;
+		else
+			turn = turn + 180;
+			speed = -speed;
 
+		Car_Turn_Angle(turn);	
+		Car_Run(speed);
 		#endif
+		
+
+
+		#ifndef BOTTOMIMPROVE
 		//USART1_printf(USART3,"aaaa");
 		//USART1_printf(USART3, "----%d----", speed);
 		//USART_SendData(USART3,turn);  
@@ -102,6 +116,7 @@ int main()
 			Car_Run(speed);
 		}
 		//Car_Turn(1);
+		#endif
 
 	}    
 }
@@ -165,4 +180,21 @@ void SysTick_Handler()
 	//SysTick->VAL = SysTick->LOAD;   //清空VAL，初始化Systick后可有可无
 }
 
+int  is_close(int src, int dst)
+{
+    if (src < 0)
+        src = src + 360;
+    if (dst < 0)
+        dst = dst + 360;
+    //正常情况
+    if (abs(dst - src) <= 90)
+        return 1;
+    //两种异常
+    else if (dst - src + 360 <= 90)
+        return 1;
+    else if (src - dst + 360 <= 90)
+        return 1;
+    else
+        return 0;
+}
 
