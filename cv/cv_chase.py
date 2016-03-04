@@ -5,9 +5,9 @@ import time
 import sys
 import serial
 
-car = serial.Serial("/dev/ttyUSB0",9600)
-data = serial.Serial("/dev/ttyUSB1",115200)
-cap = cv2.VideoCapture(0)
+#car = serial.Serial("/dev/ttyUSB0",9600)
+#data = serial.Serial("/dev/ttyUSB1",115200)
+cap = cv2.VideoCapture(1)
 
 color = [0, 0]
 flag = True

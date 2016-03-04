@@ -65,7 +65,7 @@ while(True):
         if cv2.waitKey(1) & 0xFF == ord('o'):
        #     flag=1 
        # if flag == 1:
-            cv2.imwrite("./saved/"+(str)(a)+".png",img)
+            cv2.imwrite((str)(a)+".png",img)
        #     a = a + 1
     except IOError:
         print "cap error"

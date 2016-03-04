@@ -3,12 +3,14 @@ import cv2
 import time as t
 import sys
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 mark = 0
 while(True):
     ret, frame = cap.read()
     cv2.namedWindow("calib")
-    cv2.imshow('frame',cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+    #cv2.imshow('frame',cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+    #cv2.imshow('frame', cv2.cvtColor(frame, cv2.COLOR_BGR2HSV))
+    cv2.imshow('frame', frame)
     # waitkey is a must-do operation, else there will be no images showed
     if cv2.waitKey(1) & 0xFF == ord('o'):
         if len(sys.argv) < 2: 
@@ -19,7 +21,7 @@ while(True):
             cv2.imwrite(sys.argv[1]+'.png', frame)
             print sys.argv[1]+'.png ' + "saved"
     mark = mark + 1
-    cv2.imwrite("save/"+(str)(mark)+'.png', frame)
+    #cv2.imwrite("save/"+(str)(mark)+'.png', frame)
     cv2.waitKey(1)
  
 #whi#le(True):

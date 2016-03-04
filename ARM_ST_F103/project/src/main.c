@@ -11,7 +11,7 @@
 
 #define BIT(x)	(1 << (x))
 #define speed_fac   1  //由差值计算速度时的系数
-#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
+//#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
 
 
 
@@ -31,6 +31,11 @@ int cmd_angle_pre = 0;
 //PID控制的中间变量
 int run_output = 0;
 int turn_output = 0;
+
+//用于解决170 -> -170问题
+int diff_1 = 0;   //原角度
+int diff_2 = 0;   //+360
+int diff_3 = 0;   //-360
 
 void Speed_Query(void);
 void Angle_Query(void);
@@ -88,6 +93,24 @@ int main()
 			turn = turn % -180;
 		}
 
+
+		//解决170 -> -170反转的问题
+		diff_1 = abs(turn - Car_Angle);
+		diff_2 = abs(360 + turn - Car_Angle);
+		diff_3 = abs(turn - 360 - Car_Angle);
+
+		if (diff_2 < diff_1)   //+360较小,即170 -> -170
+		{
+			turn = 360 + turn;
+		}
+		else if (diff_3 < diff_1)   //-360较小,即-170 -> 170
+		{
+			turn = turn - 360;
+		}
+		else
+		{
+			turn = turn;
+		}
 
 		#ifdef BOTTOMIMPROVE  
 		//转向优化
@@ -178,6 +201,7 @@ void SysTick_Handler()
 	
 	Speed_Query();
 	Angle_Query();
+
 	
     //运动电机仍采用传统控制方式
 	//calcPID(&Motor_Run, Car_Speed);
