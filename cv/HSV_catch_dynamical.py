@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import time
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 color = [0, 0]
 flag = True
 flag1 = True
@@ -87,7 +87,7 @@ while(True):
     
 
     # 转换到 HSV 
-    c = cv2.resize(a, (80,60))
+    #c = cv2.resize(a, (80,60))
     c = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
     
   
@@ -128,16 +128,16 @@ while(True):
     
     #全局光评价
     amount = 0  
-    for i in range(1, 60):
-        for j in range(1, 80):
+    for i in range(1, 480):
+        for j in range(1, 640):
             amount = amount + c[i ,j, 2]
-    amount = amount / (60 * 80)
+    amount = amount / (480 * 640)
     #print amount
 
 
 
-    for i in range(1, 60):
-        for j in range(1, 80):
+    for i in range(1, 480):
+        for j in range(1, 640):
             h_delta = np.float32(c[i, j, 2] - amount) / 100  * 60
            #最大范围建议通过直接采样获得
             if h_delta > 40: 
@@ -215,8 +215,8 @@ while(True):
     sort.sort()
     #reverse 本身不做排序
     sort.reverse()
-    bakg = np.zeros((60,80), np.uint8)
-    bakg1 = np.zeros((60,80), np.uint8)
+    bakg = np.zeros((480,640), np.uint8)
+    bakg1 = np.zeros((480,640), np.uint8)
     if len(area_dynamic) > 0:
         cv2.drawContours(bakg, cot_static, area_static.index(sort[0]), (255, 0, 0), 1)
         cv2.drawContours(bakg1, cot_static, -1, (255, 0, 0), 3)

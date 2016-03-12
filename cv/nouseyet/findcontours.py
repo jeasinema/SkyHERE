@@ -157,7 +157,7 @@ while(True):
     #Attention! cannot use numpy.resize!!
     
     # 转换到 HSV 
-    c = cv2.resize(a, (80,60))
+    c = cv2.resize(a, (640,480))
     c = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
     
     
@@ -181,7 +181,14 @@ while(True):
     
     mask = cv2.inRange(c, lower_green , upper_green)
     c = np.float32(c)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
+    #mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3,3),np.uint8))
+    mask_contours = mask 
+    cot_static = cv2.findContours(mask_contours, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1]
+    print cot_static.shape
+    bkg = np.zeros((480, 640), np.uint8)
+
+
+    #cv2.drawContours(bkg, cot_static, -1, (255,0,0), 3)
     #TODO:20160229
     #想办法解决tag离开视野后杂色干扰的问题
 
@@ -240,7 +247,7 @@ while(True):
 
     #print angle,length, x, y
     #print info,car_speed,car_angle
-    car_run(speed , angle)
+    #car_run(speed , angle)
     
     #car.write("#"+(str)(speed)+"-"+(str)(angle)+"*")l
 
@@ -250,6 +257,7 @@ while(True):
     mask = cv2.resize(mask, (640 ,480))
     cv2.imshow('origin', a)
     cv2.imshow('mask', mask)
+    cv2.imshow('contours', bkg)
 	#mark = mark + 1
         #cv2.imwrite("save/"+(str)(mark)+'.png', mask)
         #cv2.imshow('image', a)
