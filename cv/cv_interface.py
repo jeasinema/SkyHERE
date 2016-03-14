@@ -1,3 +1,4 @@
+# -*- coding:UTF-8 -*- 
 import cv2
 import cv
 import numpy as np
@@ -27,7 +28,10 @@ class videoHandle:
     def check_args(func):
         #if  len(func.argc) > 1:
         #    pass
-        return func
+        def wrappers(*args, **kwargs):
+            
+        func(*args, **kwargs)
+        return wrappers
     def is_set(*args):
         try:
             for i in agrs:
@@ -37,7 +41,7 @@ class videoHandle:
         else:
             return 1
 
-    @check_args
+    @check_2rgs
     def get_image(self, *args, **kw):
         try:
             ret, self.frame = self.cap.read()
@@ -122,7 +126,7 @@ class videoHandle:
         else:
             self.frame_resize_hsv = cv2.resize(self.frame_hsv,(self.camerawidth, self.cameraheight))
         #threshold
-        self.thresholdlow = np.array((self.select_color_hsv[0]-20, 0, 50))
+        self.thresholdlow = np.array((self.select_color_hsv[0]-20, 120, 80))
         self.thresholdhigh = np.array((self.select_color_hsv[0]+20, 255, 255))
         self.mask = cv2.inRange(self.frame_resize_hsv, self.thresholdlow, self.thresholdhigh)
         
@@ -133,9 +137,9 @@ class videoHandle:
     def findcenter_image(self,**kw):
         self.moments = cv2.moments(self.mask)
         
-        if ret['m00'] != 0:
-            self.centerx= (int)((float)(ret['m10'])/(float)(ret['m00']))
-            self.centery= (int)((float)(ret['m01'])/(float)(ret['m00']))
+        if self.moments['m00'] != 0:
+            self.centerx= (int)((float)(self.moments['m10'])/(float)(self.moments['m00']))
+            self.centery= (int)((float)(self.moments['m01'])/(float)(self.moments['m00']))
         else:
             self.centerx = 320 
 	    self.centery = 240
