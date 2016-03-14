@@ -3,13 +3,14 @@ import cv2
 import cv
 import numpy as np
 import types
+from functiontools import wraps
 
 class videoHandle:
     distortmtx = np.array([[ 411.8740606 ,    0.        ,  303.41061317],
                             [   0.        ,  409.43354707,  253.78413993],
                             [   0.        ,    0.        ,    1.        ]])
     distortdist = np.array([[-0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423]])
-    def __init__(self, *args, **kw):    
+    def __init__(self, *args, **kwargs):    
         if len(args) > 0:
             deviceName = args[0]
         else:
@@ -28,11 +29,17 @@ class videoHandle:
     def check_args(func):
         #if  len(func.argc) > 1:
         #    pass
+		@wraps(func)
         def wrappers(*args, **kwargs):
-            
-        func(*args, **kwargs)
+            #do something
+			if len(kwargs) < 0:
+				kwargs['dicvalid'] = False
+			if len(args) < 0:
+				kwargs['tupvalid'] = False
+        	return func(*args, **kwargs)
         return wrappers
-    def is_set(*args):
+
+    def is_set(*args, **kwargs):
         try:
             for i in agrs:
                 i
@@ -41,8 +48,8 @@ class videoHandle:
         else:
             return 1
 
-    @check_2rgs
-    def get_image(self, *args, **kw):
+    @check_args
+    def get_image(self, *args, **kwargs):
         try:
             ret, self.frame = self.cap.read()
             if ret == 0:
@@ -52,7 +59,7 @@ class videoHandle:
             return 0
     
     @check_args
-    def select_image_color(self):
+    def select_image_color(self,*args, **kwargs):
         #cv2.destroyAllWindows()
         self.flag_select = 1
         cv2.namedWindow('select_color')
@@ -84,7 +91,7 @@ class videoHandle:
 
 
     @check_args
-    def show_image(self, *args, **kw):
+    def show_image(self, *args, **kwargs):
         if len(args) > 0:
             windowName = args[0]
         else:
@@ -93,16 +100,16 @@ class videoHandle:
         cv2.waitKey(1)
 
     @check_args
-    def save_image(self, *args, **kw):
+    def save_image(self, *args, **kwargs):
         if len(args) > 1:
             fileName = args[0]
         cv2.imwrite((str)(fileName), self.frame)
 
     @check_args
-    def prehandle_image(self, *args, **kw):
+    def prehandle_image(self, *args, **kwargs):
         #Gussian Blur
-        #if len(kw) > 0 and kw.has_key('kernelSize'):
-        #    kernelSize = kw['kernelSize']
+        #if len(kwargs) > 0 and kw.has_key('kernelSize'):
+        #    kernelSize = kwargs['kernelSize']
         #    if kernelSize % 2 == 1 and kernelSize > 0:
         #        self.frame = cv2.GaussianBlur(self.frame, (kernelSize, kernelSize), 1)
         #    else:
@@ -117,8 +124,8 @@ class videoHandle:
         self.frame_hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
         
         #resize
-        if kw.has_key('size'):
-            size = kw['size']
+        if kwargs.has_key('size'):
+            size = kwargs['size']
             if type(size) == types.TupleType:
                 self.frame_resize_hsv = cv2.resize(self.frame_hsv,size)
             else:
@@ -134,7 +141,7 @@ class videoHandle:
         self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_OPEN, np.ones((7,7), np.uint8))
     
     @check_args
-    def findcenter_image(self,**kw):
+    def findcenter_image(self,*args, **kwargs):
         self.moments = cv2.moments(self.mask)
         
         if self.moments['m00'] != 0:
@@ -146,7 +153,7 @@ class videoHandle:
         self.centerx = self.centerx
         self.centery = self.centery
     
-    def findcontours_image(self, **kw):
+    def findcontours_image(self, *args, **kwargs):
         self.contours = cv2.findContours(self.mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1]
         self.numofcontours = len(self.contours)
          
