@@ -11,7 +11,7 @@ class carHandle:
     defaule_serial = 0
     default_baudrate = 9600
 
-    @self.decos(2)
+    @decos(2)
     def __init__(self, *args, **kwargs):
         """
         args = (deviceName, baudrate)
@@ -28,7 +28,7 @@ class carHandle:
             print "cannot open the serial port correctly."
             del self
     
-    @self.decos(2)
+    @decos(2)
     def send_cmd(self, *args, **kwargs):
         """
         args = (speed, angle)
@@ -44,7 +44,7 @@ class carHandle:
         except srial.serialutil.SerialException:
             print "transfer failed."
     
-    @self.decos(2)
+    @decos(2)
     def wait_button(self, *args, **kwargs):
         """
         args = (wait_time, wait_what)
