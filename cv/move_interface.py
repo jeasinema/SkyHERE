@@ -48,7 +48,7 @@ class carHandle:
     def wait_button(self, *args, **kwargs):
         """
         args = (wait_time, wait_what)
-        default args is (0,'o')
+        default = (0,'o')
         """
         if kwargs['tupvalid']:
             while(cv2.waitKey(args[0]) &  0xFF == ord((str)(args[1]))):

@@ -4,6 +4,8 @@ import cv
 import numpy as np
 import types
 import cmath
+import time
+from datetime import datetime
 from functools import wraps
 from decos_interface import decos
 
@@ -17,6 +19,10 @@ class videoHandle:
     
     @decos(1)
     def __init__(self, *args, **kwargs):    
+        """
+        args = (deviceName)
+        default = (0)
+        """
         if kwargs['tupvalid']:
             deviceName = args[0]
         else:
@@ -31,8 +37,12 @@ class videoHandle:
         except IOError:
             print "Camera is not correctly init."
             del self
-
+    @decos(0)
     def is_set(*args, **kwargs):
+        """
+        args = ()
+        default = ()
+        """
         try:
             for i in agrs:
                 i
@@ -43,6 +53,10 @@ class videoHandle:
 
     @decos(0)
     def get_image(self, *args, **kwargs):
+        """
+        args = ()
+        default = ()
+        """
         try:
             ret, self.frame = self.cap.read()
             if ret == 0:
@@ -53,6 +67,10 @@ class videoHandle:
     
     @decos(0)
     def select_image_color(self,*args, **kwargs):
+        """
+        args = ()
+        default = ()
+        """
         #cv2.destroyAllWindows()
         self.flag_select = 1
         cv2.namedWindow('select_color')
@@ -83,11 +101,10 @@ class videoHandle:
 
     @decos(1)
     def show_image(self, *args, **kwargs):
-        #if kwargs['tupvalid']:
-        #    try:
-        #        windowName = args[0]
-        #    except IndexError:
-        #        windowName = 'default'
+        """
+        args = (windowName)
+        default = ('default')
+        """
         if kwargs['tupvalid']:
             windowName = args[0]
         else:
@@ -97,12 +114,37 @@ class videoHandle:
 
     @decos(1)
     def save_image(self, *args, **kwargs):
+        """
+        args = (fileName)
+        default = (datetime.now().ctime())
+        """
         if kwargs['tupvalid']:
             fileName = args[0]
-        cv2.imwrite((str)(fileName), self.frame)
+        else:
+            fileName = datetime.now().ctime()
+        cv2.imwrite((str)(fileName)+'.png', self.frame)
+        print fileName+" saved."
 
-    @decos(3)
+    @decos(1)
     def prehandle_image(self, *args, **kwargs):
+        """
+        args = ((size_x,size_y))
+        default = ((vedioHandle.camerawidth,vedioHandle.cameraheight))
+        """
+        try:
+            if kwargs['dicvalid']:
+                if kwargs.has_key('size'):
+                    size = kwargs['size']
+                    if type(size) == types.TupleType:
+                        pass
+                    else:
+                        raise IOError 
+                else:
+                    raise IOError
+            else:
+                raise IOError
+        except IOError:
+            size  = (self.camerawidth, self.cameraheight)
 
         #undistort
         self.frame = cv2.undistort(self.frame, self.distortmtx, self.distortdist)
@@ -111,14 +153,7 @@ class videoHandle:
         self.frame_hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
         
         #resize
-        if kwargs.has_key('size'):
-            size = kwargs['size']
-            if type(size) == types.TupleType:
-                self.frame_resize_hsv = cv2.resize(self.frame_hsv,size)
-            else:
-                self.frame_resize_hsv = cv2.resize(self.frame_hsv,(self.camerawidth, self.cameraheight))
-        else:
-            self.frame_resize_hsv = cv2.resize(self.frame_hsv,(self.camerawidth, self.cameraheight))
+        self.frame_resize_hsv = cv2.resize(self.frame_hsv,size)
         #threshold
         self.thresholdlow = np.array((self.select_color_hsv[0]-20, 120, 80))
         self.thresholdhigh = np.array((self.select_color_hsv[0]+20, 255, 255))
@@ -129,6 +164,10 @@ class videoHandle:
     
     @decos(0)
     def findcenter_image(self,*args, **kwargs):
+        """
+        args = ()
+        default = ()
+        """
         self.moments = cv2.moments(self.mask)
         
         if self.moments['m00'] != 0:
@@ -147,10 +186,9 @@ class videoHandle:
     @decos(0,2)
     def generate_output(self,*args,**kwargs):
         """
-        kwargs:
-        'point1' : the start point, a dic with 'x' and 'y' keys
-        'point2' : the end point, the same as above
-        ret: a dic with 'length' and 'angle' keys
+        kwargs = {'point1' : {'x' : x, 'y' : y},'point2': {'x' : x, 'y' : y}}
+        default = {'point1' : {'x' : camerawidth/2, 'y' : cameraheight/2},'point2': {'x' : camerawidth/2, 'y' : cameraheight/2}}
+        ret = {'length' : length, 'angle' : angle}
         """
         length = 0
         angle = 0
@@ -186,12 +224,17 @@ class videoHandle:
     def wait_button(self, *args, **kwargs):
         """
         args = (wait_time, wait_what)
-        default args is (0,'o')
+        default = (0,'o')
+        ret = 1(button == wait_what) 0(button != wait_what)
+
         """
         if kwargs['tupvalid']:
-            while(cv2.waitKey(args[0]) &  0xFF == ord((str)(args[1]))):
-                pass
+            if cv2.waitKey(args[0]) &  0xFF == ord((str)(args[1])):
+                return 1
+            else:
+                return 0
         else:
-            while(cv2.waitKey(0) & 0xFF == ord((str)('o'))):
-                pass
-
+            if cv2.waitKey(0) & 0xFF == ord((str)('o')):
+                return 1
+            else:
+                return 0
