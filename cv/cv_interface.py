@@ -81,14 +81,15 @@ class videoHandle:
         #if self.is_set(self.select_color):
         print x, y, self.select_color , self.select_color_hsv
 
-
     @decos(1)
     def show_image(self, *args, **kwargs):
+        #if kwargs['tupvalid']:
+        #    try:
+        #        windowName = args[0]
+        #    except IndexError:
+        #        windowName = 'default'
         if kwargs['tupvalid']:
-            try:
-                windowName = args[0]
-            except IndexError:
-                windowName = 'default'
+            windowName = args[0]
         else:
             windowName = 'default'
         cv2.imshow((str)(windowName), self.frame)

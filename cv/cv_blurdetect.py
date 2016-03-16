@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from cv_interface import videoHandle as myv
 
-cam  = myv(0)
+cam  = myv(1)
 cam.select_image_color()
 mask_pre = np.zeros((cam.cameraheight, cam.camerawidth), np.float32)
 x_pre  = cam.camerawidth/2
