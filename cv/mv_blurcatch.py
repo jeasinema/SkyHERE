@@ -1,10 +1,24 @@
+#!/usr/bin/env python
 # -*- coding:UTF-8 -*-
+# ----------------------------------
+# File Name : mv_blurcatch.py
+# Purpose :
+# Creation Date : 16-03-2016
+# Last Modified : Wed Mar 16 12:06:42 2016
+# Created By : Jeasine Ma
+# ---------------------------------
 import cv2
-import numpy as np
+import serial
+from functools import wraps
 from cv_interface import videoHandle as myv
+from move_interface import carHandle as myc
+from decos_interface import decos
 
-cam  = myv(0)
+car = myc(0, 9600)
+cam = myv(0)
 cam.select_image_color()
+car.send_cmd(0, 0)
+
 mask_pre = np.zeros((cam.cameraheight, cam.camerawidth), np.float32)
 x_pre  = cam.camerawidth/2
 y_pre  = cam.cameraheight/2
@@ -24,7 +38,11 @@ while(True):
         y_pre = cam.centery
         print result['angle'],(cam.centerx,cam.centery),(x_pre,y_pre)
          
+        car.send_cmd(50, result['angle'])
+        car.wait_button(0, 's')
+        car.send_cmd(0, 0)
         """
         TODO:
         using difference method
         """
+        

@@ -3,18 +3,24 @@ import cv2
 import cv
 import numpy as np
 import types
-from functiontools import wraps
+import cmath
+from functools import wraps
+from decos_interface import decos
 
 class videoHandle:
     distortmtx = np.array([[ 411.8740606 ,    0.        ,  303.41061317],
                             [   0.        ,  409.43354707,  253.78413993],
                             [   0.        ,    0.        ,    1.        ]])
     distortdist = np.array([[-0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423]])
+    
+    default_camera = 0
+    
+    @decos(1)
     def __init__(self, *args, **kwargs):    
-        if len(args) > 0:
+        if kwargs['tupvalid']:
             deviceName = args[0]
         else:
-            deviceName = 0
+            deviceName = self.default_camera
         try:
             self.cap = cv2.VideoCapture(deviceName)
             if self.cap.isOpened():
@@ -25,19 +31,6 @@ class videoHandle:
         except IOError:
             print "Camera is not correctly init."
             del self
-    
-    def check_args(func):
-        #if  len(func.argc) > 1:
-        #    pass
-		@wraps(func)
-        def wrappers(*args, **kwargs):
-            #do something
-			if len(kwargs) < 0:
-				kwargs['dicvalid'] = False
-			if len(args) < 0:
-				kwargs['tupvalid'] = False
-        	return func(*args, **kwargs)
-        return wrappers
 
     def is_set(*args, **kwargs):
         try:
@@ -48,7 +41,7 @@ class videoHandle:
         else:
             return 1
 
-    @check_args
+    @decos(0)
     def get_image(self, *args, **kwargs):
         try:
             ret, self.frame = self.cap.read()
@@ -58,7 +51,7 @@ class videoHandle:
         except IOError:
             return 0
     
-    @check_args
+    @decos(0)
     def select_image_color(self,*args, **kwargs):
         #cv2.destroyAllWindows()
         self.flag_select = 1
@@ -73,7 +66,6 @@ class videoHandle:
             print self.select_color_hsv
         cv2.destroyWindow('select_color')
     
-    @check_args
     def select_point_callback(self, event , x, y, flag, param):
         self.select_color = self.frame[y,x,:] 
         self.select_color_hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)[y,x,:]
@@ -90,32 +82,26 @@ class videoHandle:
         print x, y, self.select_color , self.select_color_hsv
 
 
-    @check_args
+    @decos(1)
     def show_image(self, *args, **kwargs):
-        if len(args) > 0:
-            windowName = args[0]
+        if kwargs['tupvalid']:
+            try:
+                windowName = args[0]
+            except IndexError:
+                windowName = 'default'
         else:
             windowName = 'default'
         cv2.imshow((str)(windowName), self.frame)
         cv2.waitKey(1)
 
-    @check_args
+    @decos(1)
     def save_image(self, *args, **kwargs):
-        if len(args) > 1:
+        if kwargs['tupvalid']:
             fileName = args[0]
         cv2.imwrite((str)(fileName), self.frame)
 
-    @check_args
+    @decos(3)
     def prehandle_image(self, *args, **kwargs):
-        #Gussian Blur
-        #if len(kwargs) > 0 and kw.has_key('kernelSize'):
-        #    kernelSize = kwargs['kernelSize']
-        #    if kernelSize % 2 == 1 and kernelSize > 0:
-        #        self.frame = cv2.GaussianBlur(self.frame, (kernelSize, kernelSize), 1)
-        #    else:
-        #        self.frame = cv2.GaussianBlur(self.frame, (5, 5) ,1)
-        #else:
-        #    self.frame = cv2.GaussianBlur(self.frame, (5, 5) ,1)
 
         #undistort
         self.frame = cv2.undistort(self.frame, self.distortmtx, self.distortdist)
@@ -140,7 +126,7 @@ class videoHandle:
         #morphlogy
         self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_OPEN, np.ones((7,7), np.uint8))
     
-    @check_args
+    @decos(0)
     def findcenter_image(self,*args, **kwargs):
         self.moments = cv2.moments(self.mask)
         
@@ -157,7 +143,54 @@ class videoHandle:
         self.contours = cv2.findContours(self.mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1]
         self.numofcontours = len(self.contours)
          
-     
+    @decos(0,2)
+    def generate_output(self,*args,**kwargs):
+        """
+        kwargs:
+        'point1' : the start point, a dic with 'x' and 'y' keys
+        'point2' : the end point, the same as above
+        ret: a dic with 'length' and 'angle' keys
+        """
+        length = 0
+        angle = 0
+        if kwargs['dicvalid']:
+            try:
+                p1 = kwargs['point1']
+                p2 = kwargs['point2']
+            except KeyError:
+                p1 = {'x':self.camerawidth/2,'y':self.cameraheight/2} 
+                p2 = p1
+            length = np.linalg.norm([p2['x']-p1['x'],p2['y']-p1['y']])
+            if p1['x'] == p2['x']:
+                if p2['y'] > p1['y']:
+                    angle = 180
+                else:
+                    angle = 0
+            elif p1['y'] == p2['y']:
+                if p2['x'] > p1['x']:
+                    angle = 90
+                else:
+                    angle - 90
+            else:        
+                angle = np.arctan(((float)((p2['x'])-p1['x']))/((float)(p1['y']-p2['y'])))
+                angle = (float)(angle) / cmath.pi * 180
+                if (p2['y'] > p1['y']):
+                    if (p2['x'] > p1['x']):
+                        angle = 180 + angle
+                    else:
+                        angle = -180 + angle
+        return {'length':length, 'angle':angle}
 
-
+    @decos(2)
+    def wait_button(self, *args, **kwargs):
+        """
+        args = (wait_time, wait_what)
+        default args is (0,'o')
+        """
+        if kwargs['tupvalid']:
+            while(cv2.waitKey(args[0]) &  0xFF == ord((str)(args[1]))):
+                pass
+        else:
+            while(cv2.waitKey(0) & 0xFF == ord((str)('o'))):
+                pass
 
