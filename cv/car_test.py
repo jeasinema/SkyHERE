@@ -12,5 +12,5 @@ from  move_interface import carHandle as myc
 
 while(True):
     car = myc(0,9600)
-    car.send_cmd(0,40)
+    car.send_cmd(0,20)
     car.wait_button(0,'s')

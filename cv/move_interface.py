@@ -33,14 +33,14 @@ class carHandle:
         """
         args = (speed, angle)
         """
-        if kwargs['tuplevalid']:
+        if kwargs['tupvalid']:
             speed = (int)(args[0])
             angle = (int)(args[1])
         else:
             speed = self.default_speed
             angle = self.default_angle
         try:
-            self.serial_device.write("#"+(str)(speed)+"-"+(str)(angle))
+            self.serial_device.write("#"+(str)(speed)+"-"+(str)(angle)+"*")
         except srial.serialutil.SerialException:
             print "transfer failed."
     
