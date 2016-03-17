@@ -11,7 +11,7 @@ x_pre  = cam.camerawidth/2
 y_pre  = cam.cameraheight/2
 while(True):
     cam.get_image()
-    cam.prehandle_image()
+    cam.prehandle_image((80, 60))
     cam.findcenter_image()
     #detect the glob
     if cam.moments['m00'] != 0:

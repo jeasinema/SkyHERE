@@ -148,12 +148,13 @@ class videoHandle:
 
         #undistort
         self.frame = cv2.undistort(self.frame, self.distortmtx, self.distortdist)
-
-        #2HSV
-        self.frame_hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
         
         #resize
-        self.frame_resize_hsv = cv2.resize(self.frame_hsv,size)
+        self.frame_resize = cv2.resize(self.frame,size)
+      
+        #2HSV
+        self.frame_resize_hsv = cv2.cvtColor(self.frame_resize, cv2.COLOR_BGR2HSV)
+        
         #threshold
         self.thresholdlow = np.array((self.select_color_hsv[0]-20, 120, 80))
         self.thresholdhigh = np.array((self.select_color_hsv[0]+20, 255, 255))
@@ -174,8 +175,8 @@ class videoHandle:
             self.centerx= (int)((float)(self.moments['m10'])/(float)(self.moments['m00']))
             self.centery= (int)((float)(self.moments['m01'])/(float)(self.moments['m00']))
         else:
-            self.centerx = 320 
-	    self.centery = 240
+            self.centerx = self.camerawidth/2
+	    self.centery = self.cameraheight/2
         self.centerx = self.centerx
         self.centery = self.centery
     
