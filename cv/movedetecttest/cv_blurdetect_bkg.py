@@ -17,8 +17,10 @@ while(True):
     #line18-19 can be swaped
     cam.frame = cv2.absdiff(cam.frame, bkg)
     cam.frame_resize = cv2.resize(cam.frame, (80, 60))
-    cam.mask = cv2.threshold(cam.frame_resize, threshold , 255, cv2.THRESH_BINARY)
-    cam.findcenter_image()
+    #cam.mask = cv2.threshold(cam.frame_resize, threshold , 255, cv2.THRESH_BINARY)[1]
+    ret, cam.mask = cv2.threshold(cam.frame, threshold , 255, cv2.THRESH_BINARY)
+	print cam.mask, cam.mask.shape
+    #cam.findcenter_image()
     #detect the glob
     if cam.moments['m00'] != 0:
         #cv2.line(cam.frame, (cam.centerx,cam.centery), (x_pre, y_pre), (255,0,0),3) 
