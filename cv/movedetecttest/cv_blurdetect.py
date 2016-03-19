@@ -14,6 +14,7 @@ while(True):
     #cam.prehandle_image(size = (80, 60))
 	
     cam.prehandle_image()
+    print cam.mask.shape
     cam.findcenter_image()
     #detect the glob
     if cam.moments['m00'] != 0:
