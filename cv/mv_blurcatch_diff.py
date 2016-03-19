@@ -4,7 +4,7 @@
 # File Name : mv_blurcatch_diff.py
 # Purpose :
 # Creation Date : 16-03-2016
-# Last Modified : Wed Mar 16 23:43:54 2016
+# Last Modified : Thu Mar 17 22:03:30 2016
 # Created By : Jeasine Ma
 # ---------------------------------
 import numpy as np
@@ -28,25 +28,32 @@ y_pre  = cam.cameraheight/2
 1.尝试背景剪除法，直接剪除背景，不用二值化 效果见/Desktop/1.png
 2.尝试黑白帧差法,考虑运动速度，建议用此法,效果见/Desktop/2.png
 2+.测试黑白帧差法的速度,注意到网球的颜色较浅，与背景颜色近似，剪除效果不佳
+3-.重新尝试现有算法在判断运动方向上的问题，并测量帧率，先把图像压缩一下
 3.编写黑白帧差法获得运动方向的算法
+使用帧差法作为检测出现的的算法，接下来交由动态阈值二值化处理
 """
 count = 0
 cam.get_image()
 bkg = cv2.cvtColor(cam.frame, cv2.COLOR_BGR2GRAY)
 while(True):
+    
     cam.get_image()
     cam.frame = cv2.cvtColor(cam.frame, cv2.COLOR_BGR2GRAY)
     for i in range(1):
         cam.frame = cv2.GaussianBlur(cam.frame, (7 ,7), 0, 0)
 #    cam.frame = cv2.cvtColor(cam.frame, cv2.COLOR_BGR2GRAY)
     frame = cv2.absdiff(cam.frame , frame_pre_1)
-    ret, cam.mask = cv2.threshold(frame, 100, 255, cv2.THRESH_BINARY)
+    ret, cam.mask = cv2.threshold(frame, 100, 25, cv2.THRESH_BINARY)
     frame_pre_1 = cam.frame
     cv2.imwrite("/saved/"(str)(count)+".png",cam.mask)
     count = count + 1
-    
-    
+     
+    cam.get_image()
+    cam.frame = cv2.cvtColor(cam.frame, cv2.COLOR_BGR2GRAY)
+    cam.findcenter_image()
+    cam.generate_output({'point1':{'x':,'y':},'point2':{'x':,'y':})
 
+    
     #cam.prehandle_image()
     #cam.findcenter_image()
     #detect the glob

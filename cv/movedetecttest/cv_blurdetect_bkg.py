@@ -3,15 +3,21 @@ import cv2
 import numpy as np
 from cv_interface import videoHandle as myv
 
+threshold = 30
 cam  = myv(0)
-cam.select_image_color()
-cv2.destroyAllWindows()
-mask_pre = np.zeros((cam.cameraheight, cam.camerawidth), np.float32)
+#cam.select_image_color()
+#cv2.destroyAllWindows()
+mask_pre = np.zeros((80, 60), np.uint8)
 x_pre  = cam.camerawidth/2
 y_pre  = cam.cameraheight/2
+cam.get_image()
+bkg = cam.frame
 while(True):
     cam.get_image()
-    cam.prehandle_image((80, 60))
+    #line18-19 can be swaped
+    cam.frame = cv2.absdiff(cam.frame, bkg)
+    cam.frame_resize = cv2.resize(cam.frame, (80, 60))
+    cam.mask = cv2.threshold(cam.frame_resize, threshold , 255, cv2.THRESH_BINARY)
     cam.findcenter_image()
     #detect the glob
     if cam.moments['m00'] != 0:

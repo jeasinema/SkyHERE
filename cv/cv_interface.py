@@ -1,4 +1,4 @@
-# -*- coding:UTF-8 -*- 
+# -*- coding:UTF-8 -*-
 import cv2
 import cv
 import numpy as np
@@ -128,8 +128,8 @@ class videoHandle:
     @decos(1)
     def prehandle_image(self, *args, **kwargs):
         """
-        args = ((size_x,size_y))
-        default = ((vedioHandle.camerawidth,vedioHandle.cameraheight))
+        kwargs = {'size':(size_x, size_y)}
+        default = {'size': (vedioHandle.camerawidth,vedioHandle.cameraheight)}
         """
         try:
             if kwargs['dicvalid']:
@@ -168,6 +168,7 @@ class videoHandle:
         """
         args = ()
         default = ()
+        find the center of cam.mask
         """
         self.moments = cv2.moments(self.mask)
         
