@@ -216,5 +216,5 @@ void EXTI4_IRQHandler(void)
 void Encoder_Init(void){
 	TIM3_Init();
 	TIM2_Init();
-	EXTI4_Encoder_Init();
+	//EXTI4_Encoder_Init();
 }
