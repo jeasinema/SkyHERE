@@ -161,7 +161,7 @@ class videoHandle:
         self.mask = cv2.inRange(self.frame_resize_hsv, self.thresholdlow, self.thresholdhigh)
         
         #morphlogy
-        self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_OPEN, np.ones((7,7), np.uint8))
+        self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_OPEN, np.ones((3,3), np.uint8))
     
     @decos(0)
     def findcenter_image(self,*args, **kwargs):
@@ -220,7 +220,8 @@ class videoHandle:
                         angle = 180 + angle
                     else:
                         angle = -180 + angle
-        return {'length':length, 'angle':angle}
+		#20160321测试发现angle正负不对
+        return {'length':length, 'angle':-angle}
 
     @decos(2)
     def wait_button(self, *args, **kwargs):

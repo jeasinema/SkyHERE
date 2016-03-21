@@ -10,7 +10,7 @@
 from cv_interface import videoHandle as myv
 
 if __name__ == "__main__":
-    cam = myv(1)
+    cam = myv(0)
     while(True):
         cam.get_image()
         cam.show_image()

@@ -5,11 +5,8 @@ import sys
 import time
 
 car = serial.Serial("/dev/ttyUSB0",9600)
-
-while(True):
-    key_input = raw_input()
-    car.write("#"+(str)(key_input)+"*")
-    car.flush()
+car.write("#0-0*")
+car.flush()
 
 
     
