@@ -11,7 +11,7 @@
 
 #define BIT(x)	(1 << (x))
 #define speed_fac   1  //由差值计算速度时的系数
-//#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
+#define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
 
 
 
@@ -40,7 +40,9 @@ int diff_3 = 0;   //-360
 void Speed_Query(void);
 void Angle_Query(void);
 void SysTick_Init(uint8_t SYSCLK);
+
 int is_close(int src, int dst);
+int speed_reverse_flag = 0;
 
 int main()
 {
@@ -53,34 +55,12 @@ int main()
 	Car_Run_Speed(0);
 	Car_Turn_Speed(0);   //调用底层函数制动
 
-	// while(!Start_Due)
-	// {
-	// 	Car_Turn(1);    //方向待定
-	// }
-
-
 	while(1)
 	{
 		
-		//USART1_printf(USART2,"ok\r\n");
-		//USART1_printf(USART2,"%d\r\n",TIM2->CCR3);
-		//USART_SendData(USART2, TIM3->CNT);
-		
 		//USART1_printf(USART2,"angle=%d cnt=%d\r\n", (int)Car_Angle,TIM2->CNT);
-		//USART1_printf(USART2,"speed=%d cnt=%d\r\n", (int)Car_Speed,TIM3->CNT);
-		//USART1_printf(USART2, Cmd_Ble);
-		//USART1_printf(USART2,"\r\n");
-
-
-
-		//USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,TIM2->CNT,TIM2->CCR3,Motor_Run.PWM,Motor_Turn.PWM);
-		
-		//USART1_printf(USART2, "%d-%d-%d-%d-%d-%d-%d-%d\r\n",speed,turn,Car_Speed,(int)Car_Angle,Motor_Run.PWM,Motor_Turn.PWM,Motor_Run.targetValue,Motor_Turn.targetValue);
-		//USART1_printf(USART2, "#%d*%d&\r\n", Car_Speed, (int)Car_Angle);
-		//USART1_printf(USART2, "ok\r\n");
 		//USART_SendData(USART2,USART_ReceiveData(USART2));
 		
-
 		cmd_speed_pre = speed;
 		cmd_angle_pre = turn;
 		sscanf(Cmd_Ble, "#%d-%d*", &speed, &turn);
@@ -94,7 +74,65 @@ int main()
 		}
 
 
-		//解决170 -> -170反转的问题
+		#ifdef BOTTOMIMPROVE  
+		// //转向优化
+		// if (is_close(Car_Angle,turn))
+		// 	turn = turn;
+		// else
+		// 	turn = turn + 180;
+		// 	speed = -speed;
+		// if (turn > 180)
+		// {
+		// 	turn = turn % 180;
+		// }
+		// else if (turn <= -180)
+		// {
+		// 	turn = -((-turn) % 180);
+		// }
+
+		// Car_Turn_Angle(turn);	
+		// Car_Run(speed);
+		src_1 = Car_Angle;
+	    if (Car_Angle > 0)
+	    {
+	    	src_2 = -180 + Car_Angle;
+	    }
+	    else
+	    {
+	    	src_2 = 180 + Car_Angle;
+	    }
+	    //calc the angle distance 
+	    diff_1 = abs(turn - src_1)   //normal
+	    diff_2 = abs(turn - src_2)   //reverse
+	    if (diff_1 > 180)
+	    {
+	    	diff_1 = 360 - diff_1;
+	    }
+	    if (diff_2 > 180)
+	    {
+	    	diff_2 = 360 - diff_2;
+	    }
+	    if (diff_2 >= diff_1)
+	   	{
+	   		//normal turn
+	   	}
+	   	else
+	   	{
+	   		if (turn >=0)
+	   		{
+	   			turn = -180 + turn;
+	   		}
+	   		else
+	   		{
+	   			turn = 180 + turn;
+	   		}
+	   		speed = -speed; //reverse turn 
+	   	}
+		#endif
+
+
+		//解决170 -> -170反转的问题，原理：以170->-170为例，未过180前，turn为190，但是对于calcpid而言，仍然能够正常输出。过了180后，
+		//turn就变回-170了，从而恢复正常。
 		diff_1 = abs(turn - Car_Angle);
 		diff_2 = abs(360 + turn - Car_Angle);
 		diff_3 = abs(turn - 360 - Car_Angle);
@@ -112,33 +150,8 @@ int main()
 			turn = turn;
 		}
 
-		#ifdef BOTTOMIMPROVE  
-		//转向优化
-		if (is_close(Car_Angle,turn))
-			turn = turn;
-		else
-			turn = turn + 180;
-			speed = -speed;
-		if (turn > 180)
-		{
-			turn = turn % 180;
-		}
-		else if (turn <= -180)
-		{
-			turn = -((-turn) % 180);
-		}
-
-		Car_Turn_Angle(turn);	
-		Car_Run(speed);
-		#endif
-		
-
-
-		#ifndef BOTTOMIMPROVE
-		//USART1_printf(USART3,"aaaa");
-		//USART1_printf(USART3, "----%d----", speed);
-		//USART_SendData(USART3,turn);  
-		if(abs(turn - cmd_angle_pre) != 0)
+		//#ifndef BOTTOMIMPROVE  
+		if(abs(turn - cmd_angle_pre) != 0)       //cmd_angle_pre 在读取新值之前被赋值，接下来被赋值的turn又会被更改，因此没有问题
 		{
 			Car_Turn_Angle(turn);	
 		}
@@ -147,7 +160,7 @@ int main()
 			Car_Run(speed);
 		}
 		//Car_Turn(1);
-		#endif
+		//#endif
 
 	}    
 }
@@ -214,19 +227,49 @@ void SysTick_Handler()
 
 int  is_close(int src, int dst)
 {
-    if (src < 0)
-        src = src + 360;
-    if (dst < 0)
-        dst = dst + 360;
-    //正常情况
-    if (abs(dst - src) <= 90)
-        return 1;
-    //两种异常
-    else if (dst - src + 360 <= 90)
-        return 1;
-    else if (src - dst + 360 <= 90)
-        return 1;
+    // if (src < 0)
+    //     src = src + 360;
+    // if (dst < 0)
+    //     dst = dst + 360;
+    // //正常情况
+    // if (abs(dst - src) <= 90)
+    //     return 1;
+    // //两种异常
+    // else if (dst - src + 360 <= 90)
+    //     return 1;
+    // else if (src - dst + 360 <= 90)
+    //     return 1;
+    // else
+    //     return 0;
+    src_1 = src;
+    if (src >= 0)
+    {
+    	src_2 = -180 + src;
+    }
     else
-        return 0;
-}
+    {
+    	src_2 = 180 + src;
+    }
+    //calc the angle distance 
+    diff_1 = abs(turn - src_1)   //normal
+    diff_2 = abs(turn - src_2)   //reverse
+    if (diff_1 > 180)
+    {
+    	diff_1 = 360 - diff_1;
+    }
+    if (diff_2 > 180)
+    {
+    	diff_2 = 360 - diff_2;
+    }
+    if (diff_2 >= diff_1)
+   	{
+   		return 0;  //normal turn
+   	}
+   	else
+   	{
+   		return 1; //reverse turn 
+   	}
+   	//思路：由于每次循环都会重新读一次turn，因此修改turn是没有问题的
+
+} 
 
