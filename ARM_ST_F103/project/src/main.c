@@ -37,6 +37,12 @@ int diff_1 = 0;   //原角度
 int diff_2 = 0;   //+360
 int diff_3 = 0;   //-360
 
+//用于转向优化
+int src_1 = 0;   //原位置
+int src_2 = 0;   //反向位置
+int diff_4 = 0;  //距原位置的角距离
+int diff_5 = 0;  //距反向位置的角距离
+
 void Speed_Query(void);
 void Angle_Query(void);
 void SysTick_Init(uint8_t SYSCLK);
@@ -102,17 +108,17 @@ int main()
 	    	src_2 = 180 + Car_Angle;
 	    }
 	    //calc the angle distance 
-	    diff_1 = abs(turn - src_1)   //normal
-	    diff_2 = abs(turn - src_2)   //reverse
-	    if (diff_1 > 180)
+	    diff_4 = abs(turn - src_1);   //normal
+	    diff_5 = abs(turn - src_2);   //reverse
+	    if (diff_4 > 180)
 	    {
-	    	diff_1 = 360 - diff_1;
+	    	diff_4 = 360 - diff_4;
 	    }
-	    if (diff_2 > 180)
+	    if (diff_5 > 180)
 	    {
-	    	diff_2 = 360 - diff_2;
+	    	diff_5 = 360 - diff_5;
 	    }
-	    if (diff_2 >= diff_1)
+	    if (diff_5 >= diff_4)
 	   	{
 	   		//normal turn
 	   	}
@@ -241,34 +247,34 @@ int  is_close(int src, int dst)
     //     return 1;
     // else
     //     return 0;
-    src_1 = src;
-    if (src >= 0)
-    {
-    	src_2 = -180 + src;
-    }
-    else
-    {
-    	src_2 = 180 + src;
-    }
-    //calc the angle distance 
-    diff_1 = abs(turn - src_1)   //normal
-    diff_2 = abs(turn - src_2)   //reverse
-    if (diff_1 > 180)
-    {
-    	diff_1 = 360 - diff_1;
-    }
-    if (diff_2 > 180)
-    {
-    	diff_2 = 360 - diff_2;
-    }
-    if (diff_2 >= diff_1)
-   	{
-   		return 0;  //normal turn
-   	}
-   	else
-   	{
-   		return 1; //reverse turn 
-   	}
+    // src_1 = src;
+    // if (src >= 0)
+    // {
+    // 	src_2 = -180 + src;
+    // }
+    // else
+    // {
+    // 	src_2 = 180 + src;
+    // }
+    // //calc the angle distance 
+    // diff_1 = abs(turn - src_1)   //normal
+    // diff_2 = abs(turn - src_2)   //reverse
+    // if (diff_1 > 180)
+    // {
+    // 	diff_1 = 360 - diff_1;
+    // }
+    // if (diff_2 > 180)
+    // {
+    // 	diff_2 = 360 - diff_2;
+    // }
+    // if (diff_2 >= diff_1)
+   	// {
+   	// 	return 0;  //normal turn
+   	// }
+   	// else
+   	// {
+   	// 	return 1; //reverse turn 
+   	// }
    	//思路：由于每次循环都会重新读一次turn，因此修改turn是没有问题的
 
 } 
