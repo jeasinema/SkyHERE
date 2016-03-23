@@ -28,7 +28,7 @@ while(True):
         #cv2.line(cam.frame, (cam.centerx,cam.centery), (x_pre, y_pre), (255,0,0),3) 
         result = cam.generate_output(point2 = {'x':cam.centerx,'y':cam.centery}, point1 = {'x':40,'y':30}) 
     else:
-		result = {'angle':result['angle'],'length':0}
+	result = {'angle':result['angle'],'length':0}
     cv2.imshow('catch',cam.mask)
     #cam.show_image()
     cv2.waitKey(1) 

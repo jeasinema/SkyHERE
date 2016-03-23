@@ -98,45 +98,45 @@ int main()
 
 		// Car_Turn_Angle(turn);	
 		// Car_Run(speed);
-		if (abs(speed) > 0)   //速度为零时不要优化，便于调零
-		{
-			src_1 = Car_Angle;
-		    if (Car_Angle > 0)
-		    {
-		    	src_2 = -180 + Car_Angle;
-		    }
-		    else
-		    {
-		    	src_2 = 180 + Car_Angle;
-		    }
-		    //calc the angle distance 
-		    diff_4 = abs(turn - src_1);   //normal
-		    diff_5 = abs(turn - src_2);   //reverse
-		    if (diff_4 > 180)
-		    {
-		    	diff_4 = 360 - diff_4;
-		    }
-		    if (diff_5 > 180)
-		    {
-		    	diff_5 = 360 - diff_5;
-		    }
-		    if (diff_5 >= diff_4)
-		   	{
-		   		//normal turn
-		   	}
-		   	else
-		   	{
-		   		if (turn >=0)
-		   		{
-		   			turn = -180 + turn;
-		   		}
-		   		else
-		   		{
-		   			turn = 180 + turn;
-		   		}
-		   		speed = -speed; //reverse turn 
-		   	}
-		}
+		// if (abs(speed) > 0)   //速度为零时不要优化，便于调零(取消)
+		// {
+		src_1 = Car_Angle;
+	    if (Car_Angle > 0)
+	    {
+	    	src_2 = -180 + Car_Angle;
+	    }
+	    else
+	    {
+	    	src_2 = 180 + Car_Angle;
+	    }
+	    //calc the angle distance 
+	    diff_4 = abs(turn - src_1);   //normal
+	    diff_5 = abs(turn - src_2);   //reverse
+	    if (diff_4 > 180)
+	    {
+	    	diff_4 = 360 - diff_4;
+	    }
+	    if (diff_5 > 180)
+	    {
+	    	diff_5 = 360 - diff_5;
+	    }
+	    if (diff_5 >= diff_4)
+	   	{
+	   		//normal turn
+	   	}
+	   	else
+	   	{
+	   		if (turn >=0)
+	   		{
+	   			turn = -180 + turn;
+	   		}
+	   		else
+	   		{
+	   			turn = 180 + turn;
+	   		}
+	   		speed = -speed; //reverse turn 
+	   	}
+		//}
 		#endif
 
 
