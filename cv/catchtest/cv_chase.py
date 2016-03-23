@@ -41,9 +41,13 @@ while(True):
 					   (60,0) -> length = 45  speed*=2 
     距离小于多少时自动stop？
     ->(120,90) 大约20左右合适
-	"""
-    speed = result['length']*2
-    speed = 
+    """
+    speed = result['length']*2 + 40
+    if speed < 80:
+        speed = 0
+    else:
+        speed = (speed - 80) * 2
+    
     if speed > max_speed:
         speed = max_speed
    # car.send_cmd(speed , result['angle'])
