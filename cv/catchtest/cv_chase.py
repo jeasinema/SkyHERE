@@ -8,7 +8,7 @@ import time
 from cv_interface import videoHandle as myv
 from move_interface import carHandle as myc
 
-max_speed = 70
+max_speed = 60
 result = {'angle':0}
 cam = myv(0)
 car = myc(0)
@@ -16,8 +16,8 @@ re_size = (120 ,90)
 
 cam.select_image_color()
 cv2.destroyAllWindows()
-#time.sleep(5)
-#print "start now"
+time.sleep(5)
+print "start now"
 while(True):
     cam.get_image()
     cam.prehandle_image(size = re_size)
@@ -42,13 +42,12 @@ while(True):
     距离小于多少时自动stop？
     ->(120,90) 大约20左右合适
     """
-    speed = result['length']*2 + 40
-    if speed < 80:
+    speed = result['length']*2 + 30
+    if speed < 60:
         speed = 0
     else:
-        speed = (speed - 80) * 2
-    
+        speed = (speed - 60) * 2
     if speed > max_speed:
         speed = max_speed
-   # car.send_cmd(speed , result['angle'])
+    car.send_cmd(speed , result['angle'])
 	

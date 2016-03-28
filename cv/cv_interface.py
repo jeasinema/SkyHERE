@@ -78,6 +78,7 @@ class videoHandle:
         
         while(self.flag_select):
             self.get_image()
+            self.frame = cv2.undistort(self.frame, self.distortmtx, self.distortdist)
             self.show_image('select_color')
         if self.is_set(self.selectx, self.selecty, self.select_color_hsv):
             print self.selectx, self.selecty
