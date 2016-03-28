@@ -5,6 +5,7 @@ using trad method to chase the object
 import cv2
 import numpy as np
 import time
+import gc
 from cv_interface import videoHandle as myv
 from move_interface import carHandle as myc
 
@@ -13,6 +14,11 @@ result = {'angle':0}
 cam = myv(0)
 car = myc(0)
 re_size = (120 ,90)
+"""
+disable the garbage collection
+"""
+gc.disable()
+
 
 cam.select_image_color()
 cv2.destroyAllWindows()
