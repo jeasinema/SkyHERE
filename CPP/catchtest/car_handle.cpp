@@ -2,22 +2,23 @@
 
 CarHandle::CarHandle(char *serialName, speed_t baudrate)
 {
-	int USB = open(serialName, O_RDWR| O_NOCTTY );
+	int USB = open("/dev/ttyUSB0", O_RDWR| O_NOCTTY);
 	struct termios tty;
 	struct termios tty_old;
 	memset (&tty, 0, sizeof tty);
 
 	/* Error Handling */
 	if ( tcgetattr ( USB, &tty ) != 0 ) {
-	   printf("Error int open the serial"); 
+	   std::cout << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
 	}
 
 	/* Save old tty parameters */
 	tty_old = tty;
 
 	/* Set Baud Rate */
-	cfsetospeed (&tty, (speed_t)baudrate);
-	cfsetispeed (&tty, (speed_t)baudrate);
+	cfsetospeed (&tty, (speed_t)B9600);
+	cfsetispeed (&tty, (speed_t)B9600);
+
 	/* Setting other Port Stuff */
 	tty.c_cflag     &=  ~PARENB;            // Make 8n1
 	tty.c_cflag     &=  ~CSTOPB;
@@ -35,20 +36,20 @@ CarHandle::CarHandle(char *serialName, speed_t baudrate)
 	/* Flush Port, then applies attributes */
 	tcflush( USB, TCIFLUSH );
 	if ( tcsetattr ( USB, TCSANOW, &tty ) != 0) {
-		printf("Failed to flush the serial port.");
-		exit(0);
+		std::cout << "Error " << errno << " from tcsetattr" << std::endl;
 	}
-	serial = USB;
+	serial = USB; 
 }
 
 int CarHandle::sendCmd(int speed, int angle)
 {
-	char *cmd;
-	sprintf(cmd, "#%d-%d*", speed, angle);
-    int n_written = 0 , spot = 0;
+	unsigned char *cmd;
+	sprintf(cmd, "#%d-%d*\r", speed, angle);
+    int n_written = 0,
+		    spot = 0;
 	do {
-		n_written = write(serial, &cmd[spot], 1 );
-		spot += n_written;  //smart!
+	    n_written = write(serial, &cmd[spot], 1 );
+	    spot += n_written;
 	} while (cmd[spot-1] != '\r' && n_written > 0);
 	return 1;
 }
