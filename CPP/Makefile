@@ -14,7 +14,7 @@ SOURCES += $(shell find catchtest/*.h)
 .PHONY:cv_chase
 cv_chase: ./catchtest/cv_chase.cpp
 	$(CXX) $(SOURCES)  $(CXXFLAGS) -c
-	$(CXX) $(CXXFLAGS) $(patsubst %.o, %.cpp, $(wildcard catchtest/*.cpp))  -o $@ 
+	$(CXX) $(CXXFLAGS) $(patsubst %.cpp, %.o, $(wildcard catchtest/*.cpp))  -o $@ 
 	rm *.o
 
 .PHONY:clean 
