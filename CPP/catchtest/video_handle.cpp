@@ -65,7 +65,6 @@ void VideoHandle::prehandleImage(Size size)
         Mat temp = frame.clone();
         undistort(temp, frame, distortmtx, distortdist);
     }
-
     //resize
     resize(frame, frame_resize, size);
 
@@ -93,28 +92,29 @@ void VideoHandle::findcenterImage()
         centery = (int)((float)(moments.m01)/(float)(moments.m00));
     } else {
         centerx = camerawidth/2;
+		centery = cameraheight/2;
     }
-    centery = cameraheight/2;
 }
 
 Result VideoHandle::generateOutput(Point p1, Point p2)
 {
     int length = 0;
-    int angle = 0;
+    double angle = 0;
     //length = np.linalg.norm([p2['x']-p1['x'],p2['y']-p1['y']]) FIXME
+	length = sqrt(pow((p1.x-p2.x), 2) + pow((p1.y-p2.y),2));
     if (p1.x == p2.x) {
         angle = (p2.y > p1.y) ? 180 : 0;
     } else if (p1.y == p2.y) {
         angle = (p2.x > p1.x) ? 90 : -90;
     } else {
-        angle = atan(((float)((p2.x)-p1.x))/((float)(p1.y-p2.y)));
-        angle = (float)(angle) / PI * 180;
+        angle = atan(((float)(p2.x-p1.x))/((float)(p1.y-p2.y)));
+		angle = (float)(angle) / PI * 180;
         if (p2.y > p1.y) {
             angle = (p2.x > p1.x) ? (180 + angle) : (-180 + angle);
         }
     }
     //20160321测试发现angle正负不对
-    return Result(length, -angle);
+    return Result(angle, length);
 }
 
 void VideoHandle::getImage()

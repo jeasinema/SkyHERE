@@ -2,6 +2,7 @@
 #define VIDEOHANDLE_H
 
 #include <opencv2/opencv.hpp>
+#include <cmath>
 #include <iostream>
 
 #include "lib.h"

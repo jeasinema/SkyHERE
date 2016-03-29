@@ -1,6 +1,14 @@
 #ifndef CARHANDLE_H
 #define CARHANDLE_H
 
+#include <stdio.h>      // standard input / output functions
+#include <stdlib.h>
+#include <string.h>     // string function definitions
+#include <unistd.h>     // UNIX standard function definitions
+#include <fcntl.h>      // File control definitions
+#include <errno.h>      // Error number definitions
+#include <termios.h>    // POSIX terminal control definitions
+#include <string>
 #include "opencv2/opencv.hpp"
 
 using namespace cv;
@@ -8,9 +16,10 @@ using namespace cv;
 class CarHandle
 {
 public:
-    CarHandle(int device = 0, int baudrate = 9600);
-
-    void sendCmd(int speed, int angle);
+    CarHandle(char* serialName = "/dev/ttyUSB0", speed_t baudrate = B9600);
+	int sendCmd(int speed, int angle);
+private:
+	int serial;
 };
 
 #endif // CARHANDLE_H

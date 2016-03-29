@@ -221,8 +221,7 @@ class videoHandle:
                         angle = 180 + angle
                     else:
                         angle = -180 + angle
-		#20160321测试发现angle正负不对
-        return {'length':length, 'angle':-angle}
+        return {'length':length, 'angle':angle}
 
     @decos(2)
     def wait_button(self, *args, **kwargs):
