@@ -16,11 +16,11 @@ int max_speed = 60;
 Result result;
 Size re_size(80 ,60);  // first is width
 
-VideoHandle cam(0);
 //CarHandle car(0);
 
 int main(int argc, char* argv[])
 {
+	VideoHandle cam(0);
     cam.selectImageColor();
     destroyAllWindows();
     //sleep(5);

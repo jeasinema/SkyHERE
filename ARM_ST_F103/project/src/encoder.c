@@ -205,7 +205,7 @@ void EXTI4_IRQHandler(void)
 	#endif 
 
 	#ifndef Startup
-	TIM2 -> CNT = zero;    //手动标定
+	//TIM2 -> CNT = zero;    //手动标定
 	#endif
 
 	EXTI_ClearITPendingBit(EXTI_Line4);
