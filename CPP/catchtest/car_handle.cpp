@@ -43,7 +43,8 @@ CarHandle::CarHandle(char *serialName, speed_t baudrate)
 
 int CarHandle::sendCmd(int speed, int angle)
 {
-	unsigned char *cmd;
+	char *cmd;
+	cmd = (char*)malloc(12*sizeof(char));
 	sprintf(cmd, "#%d-%d*\r", speed, angle);
     int n_written = 0,
 		    spot = 0;

@@ -5,16 +5,16 @@ all: main cv_chase
 
 .PHONY:main
 main: main.cpp
-	$(CXX) $< -o $@ $(CXXFLAGS)
+	$(CXX) $< $(CXXFLAGS) -o $@
 
-SOURCES := $(shell find catchtest/*.cpp)
-SOURCES += $(shell find catchtest/*.h)
+SRC := $(shell find catchtest/*.cpp)
+INC := ./catchtest
 
 
 .PHONY:cv_chase
 cv_chase: ./catchtest/cv_chase.cpp
-	$(CXX) $(SOURCES)  $(CXXFLAGS) -c
-	$(CXX) $(CXXFLAGS) $(patsubst %.cpp, %.o, $(wildcard catchtest/*.cpp))  -o $@ 
+	$(CXX) $(SRC) -I $(INC) $(CXXFLAGS) -c
+	$(CXX) $(patsubst %cpp, %o, $(notdir $(wildcard ./catchtest/*.cpp))) -I $(INC) $(CXXFLAGS) -o $@ 
 	rm *.o
 
 .PHONY:clean 

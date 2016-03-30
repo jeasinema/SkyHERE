@@ -55,5 +55,5 @@ while(True):
         speed = (speed - 60) * 2
     if speed > max_speed:
         speed = max_speed
-    car.send_cmd(speed , result['angle'])
+    car.send_cmd(speed , -result['angle'])   #angle is reverse!
 	

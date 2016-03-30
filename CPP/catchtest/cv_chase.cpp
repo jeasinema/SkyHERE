@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
         if (speed > max_speed) {
             speed = max_speed;
         }
-//        car.sendCmd(speed, result.angle);
+//        car.sendCmd(speed, -result.angle); //angle is reverse from the vision of the car
     }
 
     return 0;

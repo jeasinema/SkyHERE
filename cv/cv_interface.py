@@ -214,7 +214,7 @@ class videoHandle:
                 else:
                     angle - 90
             else:        
-                angle = np.arctan(((float)((p2['x'])-p1['x']))/((float)(p1['y']-p2['y'])))
+                angle = np.arctan(((float)((p2['x'])-p1['x']))/((float)(p1['y']-p2['y'])))  #xaxis is reverse
                 angle = (float)(angle) / cmath.pi * 180
                 if (p2['y'] > p1['y']):
                     if (p2['x'] > p1['x']):

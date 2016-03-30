@@ -14,6 +14,12 @@ class VideoHandle
 {
 public:
     VideoHandle(int device = 0);
+	~VideoHandle(){}
+//	{
+//		if (VideoHandle::cap->isOpened()) 
+//			VideoHandle::cap->release();
+//	}
+	static void VideoRelease(int);
 
     void selectImageColor();
     void prehandleImage(Size size);
@@ -22,6 +28,8 @@ public:
 
     void getImage();
     void showImage(const string& winname = "default");
+
+    static VideoCapture *cap;
 
     Mat frame, frame_resize, frame_resize_hsv;
     Mat mask;
@@ -33,7 +41,6 @@ public:
     Vec3b select_color_hsv;
     Mat thresholdlow, thresholdhigh;
 private:
-    VideoCapture *cap;
     int camerawidth, cameraheight;
 };
 
