@@ -20,4 +20,6 @@ void USART1_printf(USART_TypeDef* USARTx, uint8_t *Data,...);
 void DMA_Config(void);
 static void NVIC_Config(void);
 
+//__asm SystemReset(void);
+
 #endif 
