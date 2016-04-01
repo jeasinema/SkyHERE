@@ -21,7 +21,7 @@ CarHandle car(0);
 
 int main(int argc, char* argv[])
 {
-	VideoHandle cam(0);
+	VideoHandle cam = *VideoHandle::getInstance();
     cam.selectImageColor();
     destroyAllWindows();
     sleep(5);
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         if (cam.moments.m00 != 0) {
             //cv2.line(cam.frame, (cam.centerx,cam.centery), (x_pre, y_pre), (255,0,0),3)
 			//m00 = 10000 -> 70  m00 = 100000 -> 100
-			//center_delta = ((cam.moments.m00)/1000 - 10)/4 + 10; 
+			//center_delta = ((cam.moments.m00)/1000 - 10)/4 + 10;
             result = cam.generateOutput(Point(re_size.width/2,re_size.height/2+20), Point(cam.centerx,cam.centery));
         } else {
             result = Result(result.angle, 0);

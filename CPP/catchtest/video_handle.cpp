@@ -4,6 +4,18 @@
 
 #define PI (3.141592653589793)
 
+VideoHandle* VideoHandle::instance = new VideoHandle();
+
+void VideoRelease(int)
+{
+    VideoHandle* ins = VideoHandle::getInstance();
+	if (ins->cap->isOpened()) {
+		ins->cap->release();
+		cout << "camera has been released." << endl;
+		exit(0);
+	}
+}
+
 void onMouse(int event, int x, int y, int, void* h)
 {
     VideoHandle* handle = (VideoHandle*)(h);
@@ -28,11 +40,9 @@ Mat distortmtx = (Mat_<double>(3,3)<<
     0.0         ,    0.0        ,    1.0        );
 Mat distortdist = (Mat_<double>(1,5) << -0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423);
 
-VideoCapture* VideoHandle::cap = new VideoCapture(0);//non-static member must be defined out of line;
-
 VideoHandle::VideoHandle(int device)
 {
-	//cap = new VideoCapture(device);
+	cap = new VideoCapture(device);
     if (cap->isOpened()) {
         camerawidth = (int)cap->get(CV_CAP_PROP_FRAME_WIDTH);
         cameraheight = (int)cap->get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -40,7 +50,7 @@ VideoHandle::VideoHandle(int device)
         cerr << "Camera is not correctly init." << endl;
     }
     flag_select = false;
-	signal(SIGINT, &VideoHandle::VideoRelease);
+	signal(SIGINT, &VideoRelease);
 }
 
 void VideoHandle::selectImageColor()
@@ -129,13 +139,4 @@ void VideoHandle::showImage(const string& winname)
 {
     imshow(winname, frame);
     waitKey(1);
-}
-
-void VideoHandle::VideoRelease(int)
-{
-	if (VideoHandle::cap->isOpened()) {
-		VideoHandle::cap->release();
-		cout << "camera has been released." << endl;
-		exit(0);
-	}
 }
