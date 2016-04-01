@@ -72,7 +72,8 @@ Result VideoHandle::getDirection()
 
         Mat temp;
         subtract(prev, frame, temp);
-        resize(temp, temp, Size(120,90), 0, 0, CV_INTER_LINEAR);// FIXME
+        const Size size = Size(160, 120);
+        resize(temp, temp, size, 0, 0, CV_INTER_LINEAR);// FIXME
         cvtColor(temp, temp, CV_BGR2GRAY);
         threshold(temp, temp, 20, 255, CV_THRESH_BINARY);
 
@@ -83,7 +84,7 @@ Result VideoHandle::getDirection()
 
         cout << "Point : " << p.x << " " << p.y << endl;
         List.push_back(p);
-        if (p.x < 0 || p.y < 0 || p.x > 120 || p.y > 90) { // FIXME
+        if (p.x < 0 || p.y < 0 || p.x > size.width || p.y > size.height) { // FIXME
             cout << "233333333333333" << endl;
             List.clear();
         }
