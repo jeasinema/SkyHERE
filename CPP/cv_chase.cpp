@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         if (speed > max_speed) {
             speed = max_speed;
         }
-        cout << result.angle << " " << speed << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << "," << center_delta + re_size.height/2 << endl;
+        cout << result.angle << " " << speed << " " << result.length << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << "," << center_delta + re_size.height/2 << endl;
 		//car.sendCmd(speed, -result.angle); //angle is reerse from the vision of the car
     }
     return 0;
