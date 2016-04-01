@@ -59,12 +59,13 @@ int main(int argc, char* argv[])
         距离小于多少时自动stop？
         ->(120,90) 大约20左右合适
         */
-        int speed = result.length*3 + 30;
-        if (speed < 60) {
+        int speed = result.length*3;
+        if (speed < 50) {
             speed = 0;
-        } else {
-            speed = (speed - 60) * 2;
-        }
+		} else speed = 80;
+        // } else {
+        //     speed = (speed - 60) * 2;
+        // }
         if (speed > max_speed) {
             speed = max_speed;
         }
