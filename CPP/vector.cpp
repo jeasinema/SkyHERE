@@ -12,7 +12,7 @@ using trad method to chase the object
 using namespace cv;
 using namespace std;
 
-int max_speed = 80;
+int max_speed = 100;
 Result result;
 Size re_size(160 ,120);  // first is width
 int center_delta = 0;
