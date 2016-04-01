@@ -9,7 +9,7 @@
 3.180度处的超调问题
 */
 
-PID Motor_Run={0,0,0,0,0,0,0,0}, Motor_Turn={1,0,100,0,0,0,0,0};  //传参时注意应当取地址
+PID Motor_Run={0,0,0,0,0,0,0,0}, Motor_Turn={1,0,400,0,450,0,0,0};  //传参时注意应当取地址
 void calcPID(PID *pid, int input)
 {
 	int output,error;
@@ -17,6 +17,7 @@ void calcPID(PID *pid, int input)
 	if (pid->Ki != 0)
 	{
 	    pid->integrationError += error;
+	    pid->integrationError *= 0.95;
 	    // Limit the maximum integration error
 	    if (pid->integrationError > MAX_INTEGRATION_ERROR)
 	    {
@@ -42,5 +43,4 @@ void calcPID(PID *pid, int input)
 
 	pid->lastError = error;
 	pid->PWM = output;
-
 }

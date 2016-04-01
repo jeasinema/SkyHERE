@@ -12,15 +12,14 @@ using namespace std;
 
 class VideoHandle
 {
-public:
+private:
     VideoHandle(int device = 0);
+public:
 	~VideoHandle(){}
 //	{
-//		if (VideoHandle::cap->isOpened()) 
+//		if (VideoHandle::cap->isOpened())
 //			VideoHandle::cap->release();
 //	}
-	static void VideoRelease(int);
-
     void selectImageColor();
     void prehandleImage(Size size);
     void findcenterImage();
@@ -29,7 +28,7 @@ public:
     void getImage();
     void showImage(const string& winname = "default");
 
-    static VideoCapture *cap;
+    VideoCapture *cap;
 
     Mat frame, frame_resize, frame_resize_hsv;
     Mat mask;
@@ -40,8 +39,14 @@ public:
     Vec3b select_color;
     Vec3b select_color_hsv;
     Mat thresholdlow, thresholdhigh;
+
+    static VideoHandle* getInstance()
+    {
+        return VideoHandle::instance;
+    }
 private:
     int camerawidth, cameraheight;
+    static VideoHandle *instance;
 };
 
 #endif // VIDEOHANDLE_H

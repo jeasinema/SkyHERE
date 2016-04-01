@@ -57,10 +57,13 @@ int main()
 	Encoder_Init();
 	//while(1);
 	Motor_Init();
-	SysTick_Init(72);
+	//SysTick_Init(72);
 	Car_Run_Speed(0);
-	Car_Turn_Speed(0);   //调用底层函数制动
-
+	while(!Start_Due)
+	{
+		Car_Turn_Speed(2000);   //Z向输出标定
+	}
+	Car_Turn_Angle(0);
 	while(1)
 	{
 		
@@ -194,7 +197,7 @@ void Speed_Query()
 
 void Angle_Query()
 {
-	angle_tmp = TIM2->CNT - zero;
+	angle_tmp = TIM2->CNT - 0;
 	if(angle_tmp <= 2000)
 	{
 		Car_Angle = (angle_tmp / 2000) * 180;

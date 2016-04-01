@@ -21,7 +21,7 @@ CarHandle car(0);
 
 int main(int argc, char* argv[])
 {
-	VideoHandle cam(0);
+	VideoHandle cam = *VideoHandle::getInstance();
     cam.selectImageColor();
     destroyAllWindows();
     //sleep(5);

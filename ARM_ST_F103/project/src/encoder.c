@@ -11,7 +11,7 @@
 
 
 //Omron Encoder counts for 4000 per spin
-//#define Startup
+#define Startup
 //#define angle_CNT   10000  //转一周的计数数
 
 int Car_Speed = 0;
@@ -193,9 +193,10 @@ void EXTI4_IRQHandler(void)
 	if (!Start_Due)
 	{
 		zero = TIM2->CNT; 
-		Car_Turn(0);  
+		Car_Turn(0); 
+		SysTick_Init(72); 
 		Start_Due = 1;
-		Delay(0xFFF);
+		Delay(0xF);
 		Car_Turn_Angle(0);   //回零点
 	}
 	else
@@ -205,7 +206,7 @@ void EXTI4_IRQHandler(void)
 	#endif 
 
 	#ifndef Startup
-	TIM2 -> CNT = zero;    //手动标定
+	//TIM2 -> CNT = zero;    //手动标定
 	#endif
 
 	EXTI_ClearITPendingBit(EXTI_Line4);
@@ -216,5 +217,5 @@ void EXTI4_IRQHandler(void)
 void Encoder_Init(void){
 	TIM3_Init();
 	TIM2_Init();
-	//EXTI4_Encoder_Init();
+	EXTI4_Encoder_Init();
 }
