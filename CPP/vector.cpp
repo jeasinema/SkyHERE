@@ -6,6 +6,7 @@
 #include <vector>
 #include "catchtest/car_handle.h"
 #include <unistd.h>
+#include "catchtest/lib.h"
 
 using namespace std;
 using namespace cv;
@@ -26,6 +27,25 @@ Mat getUndistortFrame()
     if(temp.empty()) return temp;
     undistort(temp, frame, distortmtx, distortdist);
     return frame;
+}
+
+Result generateOutput(Point p1, Point p2)
+{
+    int length = 0;
+    double angle = 0;
+	length = sqrt(pow((p1.x-p2.x), 2) + pow((p1.y-p2.y),2));
+    if (p1.x == p2.x) {
+        angle = (p2.y > p1.y) ? 180 : 0;
+    } else if (p1.y == p2.y) {
+        angle = (p2.x > p1.x) ? 90 : -90;
+    } else {
+        angle = atan(((float)(p2.x-p1.x))/((float)(p1.y-p2.y)));
+		angle = (float)(angle) / PI * 180;
+        if (p2.y > p1.y) {
+            angle = (p2.x > p1.x) ? (180 + angle) : (-180 + angle);
+        }
+    }
+    return Result(angle, length);
 }
 
 int main(int argc, char* argv[])
@@ -83,10 +103,12 @@ int main(int argc, char* argv[])
 
         cout << "vector : " << sum.x << " " << sum.y << endl;
         if(sum.x*sum.x + sum.y*sum.y >= 40) {
-            car.sendCmd(25, atan(sum.x/sum.y));
+            Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
+            car.sendCmd(25, ret.angle);
             sleep(1);
             car.sendCmd(0, 0);
-            getchar();
+            cout << "catch vector" << endl;
+            sleep(1);
         }
         line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(100, 100, 100));
 
