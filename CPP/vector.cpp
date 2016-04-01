@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
         int speed = result.length*3;
         if (speed < 40) {
             speed = 0;
-        } else speed = 80;
+        } else speed = 100;
         if (speed > max_speed) {
             speed = max_speed;
         }
