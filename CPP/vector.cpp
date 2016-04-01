@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
 
     Result dir = cam.getDirection();
     car.sendCmd(80, dir.angle);
+    usleep(300 * 1000);
 
     cout << "dir : " << dir.angle << " " << dir.length << endl;
 
