@@ -10,8 +10,8 @@ void VideoRelease(int)
 	if (ins->cap->isOpened()) {
 		ins->cap->release();
 		cout << "camera has been released." << endl;
-		exit(0);
 	}
+    exit(0);
 }
 
 void onMouse(int event, int x, int y, int, void* h)
