@@ -108,7 +108,6 @@ Result VideoHandle::getDirection()
             ret.angle *= -1;
             return ret;
         }
-        line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(100, 100, 100));
 
         int now_clock = clock();
         double speed = double(now_clock - prev_clock) / CLOCKS_PER_SEC;
