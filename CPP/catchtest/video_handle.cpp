@@ -87,7 +87,7 @@ Result VideoHandle::getDirection()
             List.clear();
         }
 
-        const int TIMES = 3;// FIXME
+        const int TIMES = 1;// FIXME
         Point sum = Point(0, 0);
         for(int i=1;i<=TIMES;i++)
         {
