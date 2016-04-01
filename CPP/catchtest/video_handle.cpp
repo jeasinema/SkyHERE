@@ -82,7 +82,7 @@ Result VideoHandle::getDirection()
 
         cout << "Point : " << p.x << " " << p.y << endl;
         List.push_back(p);
-        if (p.x < 0 || p.y < 0 || p.x > size.width || p.y > size.height) { // FIXME
+        if (p.x < 5 || p.y < 5 || p.x > size.width-5 || p.y > size.height-5) { // FIXME
             cout << "233333333333333" << endl;
             List.clear();
         }
