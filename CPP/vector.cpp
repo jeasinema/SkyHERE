@@ -77,16 +77,15 @@ int main(int argc, char* argv[])
         //角度偏移
         int angle = dir.angle + delta * result.length/3;
 
-        int speed = result.length*3 + 30;
+        int speed = result.length*3;
         if (speed < 40) {
             speed = 0;
-        } else {
-            speed = (speed - 60) * 2;
-        }
+        } else speed = 80;
         if (speed > max_speed) {
             speed = max_speed;
         }
         cout << angle << " " << speed << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << "," << center_delta + re_size.height/2 << endl;
+		cout << "length : " << result.length << endl;
 		car.sendCmd(speed, angle); //angle is reerse from the vision of the car
     }
     return 0;
