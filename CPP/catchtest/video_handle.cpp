@@ -2,8 +2,6 @@
 #include <cmath>
 #include <csignal>
 
-#define PI (3.141592653589793)
-
 VideoHandle* VideoHandle::instance = new VideoHandle();
 
 void VideoRelease(int)
