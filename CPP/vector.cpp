@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
         int angle = dir.angle + delta * result.length/3;
 
         int speed = result.length*3 + 30;
-        if (speed < 60) {
+        if (speed < 40) {
             speed = 0;
         } else {
             speed = (speed - 60) * 2;
