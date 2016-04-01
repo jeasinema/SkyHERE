@@ -1,8 +1,8 @@
 #include "car_handle.h"
 
-CarHandle::CarHandle(char *serialName, speed_t baudrate)
+CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 {
-	int USB = open("/dev/ttyUSB0", O_RDWR| O_NOCTTY);
+	int USB = open(serialName, O_RDWR| O_NOCTTY);
 	struct termios tty;
 	struct termios tty_old;
 	memset (&tty, 0, sizeof tty);
@@ -38,7 +38,7 @@ CarHandle::CarHandle(char *serialName, speed_t baudrate)
 	if ( tcsetattr ( USB, TCSANOW, &tty ) != 0) {
 		std::cout << "Error " << errno << " from tcsetattr" << std::endl;
 	}
-	serial = USB; 
+	serial = USB;
 }
 
 int CarHandle::sendCmd(int speed, int angle)

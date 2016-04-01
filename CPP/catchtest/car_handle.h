@@ -16,7 +16,7 @@ using namespace cv;
 class CarHandle
 {
 public:
-    CarHandle(char* serialName = "/dev/ttyUSB0", speed_t baudrate = B9600);
+    CarHandle(const char* serialName = "/dev/ttyUSB0", speed_t baudrate = B9600);
 	~CarHandle() {
 		sendCmd(0 ,0);
 		if (serial) {
