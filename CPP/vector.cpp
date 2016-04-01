@@ -17,7 +17,7 @@ Result result;
 Size re_size(160 ,120);  // first is width
 int center_delta = 0;
 
-CarHandle car(0);
+CarHandle car;
 
 int main(int argc, char* argv[])
 {
