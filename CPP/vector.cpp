@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
 
     Result dir = cam.getDirection();
 
+    cout << "dir : " << dir.angle << " " << dir.length << endl;
+
     while(true) {
         cam.getImage();
         cam.prehandleImage(re_size);

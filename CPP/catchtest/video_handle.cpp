@@ -102,7 +102,7 @@ Result VideoHandle::getDirection()
         sum.y /= TIMES;
 
         cout << "vector : " << sum.x << " " << sum.y << endl;
-        if(sum.x*sum.x + sum.y*sum.y >= 40) {
+        if(sum.x*sum.x + sum.y*sum.y >= 20) {
             Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
             ret.angle *= -1;
             return ret;
