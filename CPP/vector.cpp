@@ -104,11 +104,12 @@ int main(int argc, char* argv[])
         cout << "vector : " << sum.x << " " << sum.y << endl;
         if(sum.x*sum.x + sum.y*sum.y >= 40) {
             Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
-            car.sendCmd(25, ret.angle);
+            car.sendCmd(25, -ret.angle);
             sleep(1);
             car.sendCmd(0, 0);
             cout << "catch vector" << endl;
             sleep(1);
+            exit(0);
         }
         line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(100, 100, 100));
 
