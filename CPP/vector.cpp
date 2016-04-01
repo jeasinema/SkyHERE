@@ -52,9 +52,9 @@ int main(int argc, char* argv[])
         } else {
             result = Result(result.angle, 0);
         }
-        imshow("catch", cam.mask);
+        //imshow("catch", cam.mask);
 		//imshow("origin", cam.frame);
-        waitKey(1);
+        //waitKey(1);
         /*
         测一下length的大小:(320,0) -> length = 200
         				   (40,0) -> length = 30  speed*=3

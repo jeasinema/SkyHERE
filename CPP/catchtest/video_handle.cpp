@@ -49,6 +49,7 @@ VideoHandle::VideoHandle(int device)
     }
     flag_select = false;
 	signal(SIGINT, &VideoRelease);
+    cout << "install signal" << endl;
 }
 
 Result VideoHandle::getDirection()
