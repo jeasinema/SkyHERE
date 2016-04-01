@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         if (cam.moments.m00 != 0) {
             //cv2.line(cam.frame, (cam.centerx,cam.centery), (x_pre, y_pre), (255,0,0),3)
 			//m00 = 10000 -> 70  m00 = 100000 -> 100
-			center_delta = ((cam.moments.m00)/1000 - 10)/4 + 14; 
+			center_delta = ((cam.moments.m00)/1000 - 10)/4 + 14;
 			if (center_delta > 40) {
 				center_delta = 40;
 			}

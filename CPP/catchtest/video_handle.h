@@ -20,6 +20,7 @@ public:
 //		if (VideoHandle::cap->isOpened())
 //			VideoHandle::cap->release();
 //	}
+    void autoSelectImageColor();
     void selectImageColor();
     void prehandleImage(Size size);
     void findcenterImage();

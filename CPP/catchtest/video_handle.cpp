@@ -34,11 +34,11 @@ void onMouse(int event, int x, int y, int, void* h)
     cout << x << " " << y << " " << handle->select_color << " " << handle->select_color_hsv << endl;
 }
 
-Mat distortmtx = (Mat_<double>(3,3)<<
+extern Mat distortmtx = (Mat_<double>(3,3)<<
     411.8740606 ,    0.0        ,  303.41061317,
     0.0         ,  409.43354707 ,  253.78413993,
     0.0         ,    0.0        ,    1.0        );
-Mat distortdist = (Mat_<double>(1,5) << -0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423);
+extern Mat distortdist = (Mat_<double>(1,5) << -0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423);
 
 VideoHandle::VideoHandle(int device)
 {
@@ -51,6 +51,11 @@ VideoHandle::VideoHandle(int device)
     }
     flag_select = false;
 	signal(SIGINT, &VideoRelease);
+}
+
+void VideoHandle::autoSelectImageColor()
+{
+    while(1);//FIXME
 }
 
 void VideoHandle::selectImageColor()
