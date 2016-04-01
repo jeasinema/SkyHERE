@@ -31,6 +31,8 @@ int main(int argc, char* argv[])
     cout << "start now" << endl;
 
     while(true) {
+		int start_clock = clock();
+
         cam.getImage();
         cam.prehandleImage(re_size);
 
@@ -71,6 +73,12 @@ int main(int argc, char* argv[])
         }
         cout << result.angle << " " << speed << " " << result.length << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << "," << center_delta + re_size.height/2 << endl;
 		//car.sendCmd(speed, -result.angle); //angle is reerse from the vision of the car
+
+		int end_clock = clock();
+		{
+			double speed = double(end_clock - start_clock) / CLOCKS_PER_SEC;
+	        cout << "speed : " << speed << " " << (1.0/speed) << endl;
+		}
     }
     return 0;
 }
