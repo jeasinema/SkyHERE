@@ -59,8 +59,8 @@ Result VideoHandle::getDirection()
     Mat frame;
     Mat prev;
 
-    getUndistortFrame();
-    getUndistortFrame();
+    for(int i=10;i--;)
+        getUndistortFrame();
     prev = getUndistortFrame();
 
     while(true)
@@ -205,7 +205,7 @@ void VideoHandle::showImage(const string& winname)
     waitKey(1);
 }
 
-Mat VideoHandle::getUndistortFrame()
+Mat VideoHandle::getUndistortFrame() // FIXME undistort point
 {
     Mat temp, frame;
     *cap >> temp;
