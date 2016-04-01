@@ -77,10 +77,8 @@ Result VideoHandle::getDirection()
         cvtColor(temp, temp, CV_BGR2GRAY);
         threshold(temp, temp, 20, 255, CV_THRESH_BINARY);
 
-        Mat result = Mat::zeros(temp.size(), CV_8UC3);
         Moments m = ::moments(temp);
         Point p = Point(m.m10/m.m00, m.m01/m.m00);
-        circle(result, p, 1,Scalar(255, 255, 255));
 
         cout << "Point : " << p.x << " " << p.y << endl;
         List.push_back(p);
@@ -89,7 +87,7 @@ Result VideoHandle::getDirection()
             List.clear();
         }
 
-        const int TIMES = 2;// FIXME
+        const int TIMES = 3;// FIXME
         Point sum = Point(0, 0);
         for(int i=1;i<=TIMES;i++)
         {
