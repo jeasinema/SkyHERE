@@ -66,7 +66,7 @@ Result VideoHandle::getDirection()
         int prev_clock = clock();
 
         frame = getUndistortFrame();
-        if(frame.empty()) break;
+        if(frame.empty()) exit(1);
 
         Mat temp;
         subtract(prev, frame, temp);
