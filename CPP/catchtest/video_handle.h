@@ -20,7 +20,7 @@ public:
 //		if (VideoHandle::cap->isOpened())
 //			VideoHandle::cap->release();
 //	}
-    void autoSelectImageColor();
+    Result getDirection();
     void selectImageColor();
     void prehandleImage(Size size);
     void findcenterImage();
@@ -48,6 +48,7 @@ public:
 private:
     int camerawidth, cameraheight;
     static VideoHandle *instance;
+    Mat getUndistortFrame();
 };
 
 #endif // VIDEOHANDLE_H
