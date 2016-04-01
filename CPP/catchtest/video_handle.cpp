@@ -46,6 +46,7 @@ VideoHandle::VideoHandle(int device)
         cameraheight = (int)cap->get(CV_CAP_PROP_FRAME_HEIGHT);
     } else {
         cerr << "Camera is not correctly init." << endl;
+        exit(0);
     }
     flag_select = false;
 	signal(SIGINT, &VideoRelease);
