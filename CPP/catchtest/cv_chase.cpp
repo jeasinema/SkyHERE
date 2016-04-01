@@ -24,7 +24,10 @@ int main(int argc, char* argv[])
 	VideoHandle cam(0);
     cam.selectImageColor();
     destroyAllWindows();
-    sleep(5);
+    //sleep(5);
+	for (int i = 30; i>0; i--) {
+		cam.getImage();
+	}
     cout << "start now" << endl;
 
     while(true) {
@@ -38,15 +41,17 @@ int main(int argc, char* argv[])
         if (cam.moments.m00 != 0) {
             //cv2.line(cam.frame, (cam.centerx,cam.centery), (x_pre, y_pre), (255,0,0),3)
 			//m00 = 10000 -> 70  m00 = 100000 -> 100
-			//center_delta = ((cam.moments.m00)/1000 - 10)/4 + 10; 
-            result = cam.generateOutput(Point(re_size.width/2,re_size.height/2+20), Point(cam.centerx,cam.centery));
+			center_delta = ((cam.moments.m00)/1000 - 10)/4 + 14; 
+			if (center_delta > 40) {
+				center_delta = 40;
+			}
+            result = cam.generateOutput(Point(re_size.width/2,re_size.height/2+center_delta), Point(cam.centerx,cam.centery));
         } else {
             result = Result(result.angle, 0);
         }
         imshow("catch", cam.mask);
 		//imshow("origin", cam.frame);
         waitKey(1);
-        cout << result.angle << " " << result.length << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << endl;
         /*
         测一下length的大小:(320,0) -> length = 200
         				   (40,0) -> length = 30  speed*=3
@@ -54,7 +59,7 @@ int main(int argc, char* argv[])
         距离小于多少时自动stop？
         ->(120,90) 大约20左右合适
         */
-        int speed = result.length*2 + 30;
+        int speed = result.length*3 + 30;
         if (speed < 60) {
             speed = 0;
         } else {
@@ -63,7 +68,8 @@ int main(int argc, char* argv[])
         if (speed > max_speed) {
             speed = max_speed;
         }
-		car.sendCmd(speed, -result.angle); //angle is reverse from the vision of the car
+        cout << result.angle << " " << speed << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << "," << center_delta + re_size.height/2 << endl;
+		//car.sendCmd(speed, -result.angle); //angle is reerse from the vision of the car
     }
     return 0;
 }

@@ -76,7 +76,7 @@ void VideoHandle::prehandleImage(Size size)
     cvtColor(frame_resize, frame_resize_hsv, COLOR_BGR2HSV);
 
     //threshold
-    thresholdlow = (Mat_<uchar>(1,3) << select_color_hsv[0]-20, 90, 40);
+    thresholdlow = (Mat_<uchar>(1,3) << select_color_hsv[0]-20, 90, 30);   //no human-light -> 20(unstable); with human-light -> 40
     thresholdhigh = (Mat_<uchar>(1,3) << select_color_hsv[0]+20, 255, 255);
     inRange(frame_resize_hsv, thresholdlow, thresholdhigh, mask);
 
