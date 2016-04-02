@@ -56,7 +56,7 @@ int CarHandle::sendCmd(int speed, int angle)
 	prev_speed = speed;
 	prev_angle = angle;
 
-	printf("[cmd] speed: %d angle: %d", speed, angle);
+	printf("[cmd] speed: %d angle: %d\n", speed, angle);
 
 	char cmd[1024];
 	sprintf(cmd, "#%d-%d*\r", speed, angle);
