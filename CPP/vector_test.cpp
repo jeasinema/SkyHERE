@@ -14,7 +14,7 @@ using namespace cv;
 extern Mat distortmtx;
 extern Mat distortdist;
 
-VideoCapture video_cap("side.avi");
+VideoCapture video_cap(0);
 
 vector<Point> List;
 
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 
     Mat frame;
     Mat prev;
-	
+
 	for (int i=10;i--;)
 		getUndistortFrame();
     //prev = getUndistortFrame();
@@ -79,21 +79,21 @@ int main(int argc, char* argv[])
 		Mat undistort_frame = frame.clone();
 		undistort(frame, undistort_frame, distortmtx, distortdist);
         if(frame.empty()) break;
-		
+
         Mat temp;
         subtract(prev, frame, temp);
         resize(temp, temp, re_size, 0, 0, CV_INTER_LINEAR);
         cvtColor(temp, temp, CV_BGR2GRAY);
         threshold(temp, temp, 20, 255, CV_THRESH_BINARY);
-		
+
 		Mat temp_temp = temp.clone();
         morphologyEx(temp_temp, temp, MORPH_OPEN, Mat::ones(3, 3, CV_8U));
-        
+
 		Mat result = Mat::zeros(temp.size(), CV_8UC3);
         Moments m = moments(temp);
-        
+
         Point p = Point(m.m10/m.m00, m.m01/m.m00);
-		
+
         circle(result, p, 1,Scalar(255,0, 0));
 		Mat_<Point2f> points(1,1), dst(1,1);
 		points(0) = Point2f(p.x,p.y);
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 
         sum.x /= TIMES;
         sum.y /= TIMES;
-		
+
 		Result dir;
 		{
 			dir = generateOutput(p, Point(p.x+sum.x,p.y+sum.y));
@@ -143,12 +143,12 @@ int main(int argc, char* argv[])
        //     exit(0);
        // }
         line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(100, 100, 100));
-		imshow("origin", frame);	
+		imshow("origin", frame);
 		imshow("subtract", temp);
 		imshow("result",result);
 		imshow("undistort_frame",undistort_frame);
 		waitKey(500);
-		
+
         int now_clock = clock();
         double speed = double(now_clock - prev_clock) / CLOCKS_PER_SEC;
         cout << "speed : " << speed << " " << (1.0/speed) << endl;
