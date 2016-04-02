@@ -39,10 +39,16 @@ CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 		std::cout << "Error " << errno << " from tcsetattr" << std::endl;
 	}
 	serial = USB;
+
+	prev_speed = prev_angle = 0;
 }
 
 int CarHandle::sendCmd(int speed, int angle)
 {
+	if (speed == 0) angle = prev_angle;
+	prev_speed = speed;
+	prev_angle = angle;
+
 	char *cmd;
 	cmd = (char*)malloc(12*sizeof(char));
 	sprintf(cmd, "#%d-%d*\r", speed, angle);

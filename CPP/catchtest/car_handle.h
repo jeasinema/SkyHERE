@@ -27,6 +27,7 @@ public:
 	int sendCmd(int speed, int angle);
 private:
 	int serial;
+    int prev_speed, prev_angle;
 };
 
 #endif // CARHANDLE_H
