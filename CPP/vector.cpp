@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
 				center_delta = 40;
 			}
             result = cam.generateOutput(Point(re_size.width/2,re_size.height/2+center_delta), Point(cam.centerx,cam.centery));
+	        result.angle *= -1;
         } else {
             result = Result(result.angle, 0);
         }
@@ -62,7 +63,6 @@ int main(int argc, char* argv[])
         距离小于多少时自动stop？
         ->(120,90) 大约20左右合适
         */
-        result.angle *= -1;
 
         //delta : 0 同向,-1 逆时针转动，右半周, 1 顺时针转动，左半周
         int delta;
