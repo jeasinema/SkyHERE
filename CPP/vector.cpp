@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	}
     cout << "start now" << endl;
 
-    Result dir = cam.getDirection();
+    Result dir = cam.getDirectionPoints();
     car.sendCmd(80, dir.angle);
     usleep(200 * 1000);
 
