@@ -151,12 +151,12 @@ Result VideoHandle::getDirectionPoints()
         cout << "Point : " << p.x << " " << p.y << endl;
 
         List.push_back(p);
-        if (p.x < 5 || p.y < 5 || p.x > size.width - 5|| p.y > size.height-5) {
+        if (p.x < 1 || p.y < 1 || p.x > size.width - 2 || p.y > size.height - 2) {
             cout << "455555555555555" << endl;
             List.clear();
         }
 
-        const int TIMES = 3;
+        const int TIMES = 1;
         Point sum = Point(0, 0);
         for(int i=1;i<=TIMES;i++)
         {
@@ -172,7 +172,7 @@ Result VideoHandle::getDirectionPoints()
         sum.y /= TIMES;
 
         cout << "vector : " << sum.x << " " << sum.y << endl;
-        if(abs(sum.x) > 3 || abs(sum.y) > 3) {
+        if(abs(sum.x) >= 2 || abs(sum.y) >= 2) {
             Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
             ret.angle *= -1;
             return ret;
