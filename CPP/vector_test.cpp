@@ -14,19 +14,27 @@ using namespace cv;
 extern Mat distortmtx;
 extern Mat distortdist;
 
-VideoCapture cap(0);
+VideoCapture video_cap("side.avi");
 
 vector<Point> List;
 
-CarHandle car;
+Size re_size(160,120);   // 增大画幅，解决高抛物体的运动方向无法被识别的问题
+//CarHandle car;
 
 Mat getUndistortFrame()
 {
     Mat temp, frame;
-    cap >> temp;
+    video_cap >> temp;
     if(temp.empty()) return temp;
     undistort(temp, frame, distortmtx, distortdist);
     return frame;
+}
+
+Mat getFrame()
+{
+    Mat temp, frame;
+    video_cap >> temp;
+    return temp;
 }
 
 Result generateOutput(Point p1, Point p2)
@@ -50,43 +58,56 @@ Result generateOutput(Point p1, Point p2)
 
 int main(int argc, char* argv[])
 {
-    if(!cap.isOpened()) {
-        return -1;
-    }
+    //if(!video_cap.isOpened()) {
+    //    return -1;
+    //}
 
     Mat frame;
     Mat prev;
-
-    getUndistortFrame();
-    getUndistortFrame();
-    prev = getUndistortFrame();
+	
+	for (int i=10;i--;)
+		getUndistortFrame();
+    //prev = getUndistortFrame();
+    prev = getFrame();
 
     while(true)
     {
         int prev_clock = clock();
 
-        frame = getUndistortFrame();
+        //frame = getUndistortFrame();
+        frame = getFrame();
         if(frame.empty()) break;
-
+		
         Mat temp;
         subtract(prev, frame, temp);
-        resize(temp, temp, Size(120,90), 0, 0, CV_INTER_LINEAR);
+        resize(temp, temp, re_size, 0, 0, CV_INTER_LINEAR);
         cvtColor(temp, temp, CV_BGR2GRAY);
         threshold(temp, temp, 20, 255, CV_THRESH_BINARY);
-
-        Mat result = Mat::zeros(temp.size(), CV_8UC3);
+		
+		Mat temp_temp = temp.clone();
+        morphologyEx(temp_temp, temp, MORPH_OPEN, Mat::ones(3, 3, CV_8U));
+        
+		Mat result = Mat::zeros(temp.size(), CV_8UC3);
         Moments m = moments(temp);
+        
         Point p = Point(m.m10/m.m00, m.m01/m.m00);
+		
+		Mat_<Point2f> points(1,1), dst(1,1);
+		points(0) = Point2f(p.x,p.y);
+		undistortPoints(points, dst, distortmtx, distortdist);
+		//Point p = Point(*(r.begin<double>()).x,*(r.begin<double>()).y);
+		p.x = - dst(0).x * re_size.width;
+		p.y = - dst(0).y * re_size.height;
         circle(result, p, 1,Scalar(255, 255, 255));
-
         cout << "Point : " << p.x << " " << p.y << endl;
+
         List.push_back(p);
-        if (p.x < 10 || p.y < 5 || p.x > 110 || p.y > 85) {
+        if (p.x < 5 || p.y < 5 || p.x > re_size.width - 5|| p.y > re_size.height-5) {
             cout << "233333333333333" << endl;
             List.clear();
         }
 
-        const int TIMES = 3;
+        const int TIMES = 2;
         Point sum = Point(0, 0);
         for(int i=1;i<=TIMES;i++)
         {
@@ -100,19 +121,31 @@ int main(int argc, char* argv[])
 
         sum.x /= TIMES;
         sum.y /= TIMES;
+		
+		Result dir;
+		{
+		dir = generateOutput(p, Point(p.x+sum.x,p.y+sum.y));
+		dir.angle *= -1;
+        cout << "vector : " << sum.x << " " << sum.y << " "<< "dir: " << dir.angle <<endl;
+		}
 
-        cout << "vector : " << sum.x << " " << sum.y << endl;
-        if(sum.x*sum.x + sum.y*sum.y >= 40) {
-            Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
-            car.sendCmd(80, -ret.angle);
-            sleep(1);
-            car.sendCmd(0, 0);
-            cout << "catch vector" << endl;
-            sleep(1);
-            exit(0);
-        }
+		if(sum.x*sum.x > 10 || sum.y*sum.y > 10) {
+			getchar();
+		}
+       //     Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
+       //     car.sendCmd(80, -ret.angle);
+       //     sleep(1);
+       //     car.sendCmd(0, 0);
+       //     cout << "catch vector" << endl;
+       //     sleep(1);
+       //     exit(0);
+       // }
         line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(100, 100, 100));
-
+		imshow("origin", frame);	
+		imshow("subtract", temp);
+		imshow("result",result);
+		waitKey(100);
+		
         int now_clock = clock();
         double speed = double(now_clock - prev_clock) / CLOCKS_PER_SEC;
         cout << "speed : " << speed << " " << (1.0/speed) << endl;
