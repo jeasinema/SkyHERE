@@ -21,6 +21,7 @@ public:
 //			VideoHandle::cap->release();
 //	}
     Result getDirection();
+    Result getDirectionPoints();
     void selectImageColor();
     void prehandleImage(Size size);
     void findcenterImage();
@@ -49,6 +50,7 @@ private:
     int camerawidth, cameraheight;
     static VideoHandle *instance;
     Mat getUndistortFrame();
+    Mat getFrame();
 };
 
 #endif // VIDEOHANDLE_H

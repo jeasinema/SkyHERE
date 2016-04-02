@@ -115,6 +115,75 @@ Result VideoHandle::getDirection()
     }
 }
 
+Result VideoHandle::getDirectionPoints()
+{
+    Mat frame;
+    Mat prev;
+    vector<Point> List;
+
+	for (int i=10;i--;) getFrame();
+    prev = getFrame();
+
+    while(true)
+    {
+        int prev_clock = clock();
+
+        frame = getFrame();
+        if(frame.empty()) break;
+
+        Mat temp;
+        subtract(prev, frame, temp);
+        const Size size = Size(160, 120);
+        resize(temp, temp, size, 0, 0, CV_INTER_LINEAR);
+        cvtColor(temp, temp, CV_BGR2GRAY);
+        threshold(temp, temp, 20, 255, CV_THRESH_BINARY);
+
+        morphologyEx(temp.clone(), temp, MORPH_OPEN, Mat::ones(3, 3, CV_8U));
+
+        Moments m = ::moments(temp);
+        Point p = Point(m.m10/m.m00, m.m01/m.m00);
+
+		Mat_<Point2f> points(1,1), dst(1,1);
+		points(0) = Point2f(p.x,p.y);
+		undistortPoints(points, dst, distortmtx, distortdist);
+		p.x = - dst(0).y * size.width;
+		p.y = - dst(0).x * size.height;
+        cout << "Point : " << p.x << " " << p.y << endl;
+
+        List.push_back(p);
+        if (p.x < 5 || p.y < 5 || p.x > size.width - 5|| p.y > size.height-5) {
+            cout << "455555555555555" << endl;
+            List.clear();
+        }
+
+        const int TIMES = 2;
+        Point sum = Point(0, 0);
+        for(int i=1;i<=TIMES;i++)
+        {
+            if(List.size() < TIMES + 1) continue;
+            Point a = List[List.size() - i];
+            Point b = List[List.size() - i - 1];
+            Point sub = Point(a.x-b.x, a.y-b.y);
+            sum.x += sub.x;
+            sum.y += sub.y;
+        }
+
+        sum.x /= TIMES;
+        sum.y /= TIMES;
+
+        cout << "vector : " << sum.x << " " << sum.y << endl;
+        if(abs(sum.x) > 3 || abs(sum.y) > 3) {
+            Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
+            ret.angle *= -1;
+            return ret;
+        }
+
+        int now_clock = clock();
+        double speed = double(now_clock - prev_clock) / CLOCKS_PER_SEC;
+        cout << "speed : " << speed << " " << (1.0/speed) << endl;
+    }
+}
+
 void VideoHandle::selectImageColor()
 {
     flag_select = false;
@@ -205,11 +274,18 @@ void VideoHandle::showImage(const string& winname)
     waitKey(1);
 }
 
-Mat VideoHandle::getUndistortFrame() // FIXME undistort point
+Mat VideoHandle::getUndistortFrame()
 {
     Mat temp, frame;
     *cap >> temp;
     if(temp.empty()) return temp;
     undistort(temp, frame, distortmtx, distortdist);
     return frame;
+}
+
+Mat VideoHandle::getFrame()
+{
+    Mat temp;
+    *cap >> temp;
+    return temp;
 }
