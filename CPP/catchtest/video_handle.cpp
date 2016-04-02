@@ -151,7 +151,7 @@ Result VideoHandle::getDirectionPoints()
         cout << "Point : " << p.x << " " << p.y << endl;
 
         List.push_back(p);
-        if (p.x < 1 || p.y < 1 || p.x > size.width - 2 || p.y > size.height - 2) {
+        if (p.x < 5 || p.y < 5 || p.x > size.width - 6 || p.y > size.height - 6) {
             cout << "455555555555555" << endl;
             List.clear();
         }
