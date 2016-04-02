@@ -1,5 +1,6 @@
 #include "car_handle.h"
 #include <cstdlib>
+#include <cstdio>
 
 using namespace std;
 
@@ -55,8 +56,9 @@ int CarHandle::sendCmd(int speed, int angle)
 	prev_speed = speed;
 	prev_angle = angle;
 
-	char *cmd;
-	cmd = (char*)malloc(12*sizeof(char));
+	printf("[cmd] speed: %d angle: %d", speed, angle);
+
+	char cmd[1024];
 	sprintf(cmd, "#%d-%d*\r", speed, angle);
     int n_written = 0,
 		    spot = 0;
