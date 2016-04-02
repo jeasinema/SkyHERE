@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
         }
 
         //角度偏移
-        int angle = dir.angle + delta * result.length/3;
+        int angle = dir.angle + delta * result.length/5;
 
         int speed = result.length*3;
         if (speed < 40) {

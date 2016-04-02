@@ -12,6 +12,8 @@
 
     向量长度
 
+    落点在前方
+
 #安装
 
     sudo apt-get install libopencv-dev
