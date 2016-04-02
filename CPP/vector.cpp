@@ -12,7 +12,7 @@ using trad method to chase the object
 using namespace cv;
 using namespace std;
 
-int max_speed = 100;
+int max_speed = 80;
 Result result;
 Size re_size(160 ,120);  // first is width
 int center_delta = 0;
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     cout << "start now" << endl;
 
     Result dir = cam.getDirectionPoints();
-    car.sendCmd(100, dir.angle);
+    car.sendCmd(80, dir.angle);
     usleep(20 * 1000);
 
     cout << "dir : " << dir.angle << " " << dir.length << endl;
