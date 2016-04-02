@@ -76,6 +76,8 @@ int main(int argc, char* argv[])
 
         //frame = getUndistortFrame();
         frame = getFrame();
+		Mat undistort_frame = frame.clone();
+		undistort(frame, undistort_frame, distortmtx, distortdist);
         if(frame.empty()) break;
 		
         Mat temp;
@@ -92,12 +94,13 @@ int main(int argc, char* argv[])
         
         Point p = Point(m.m10/m.m00, m.m01/m.m00);
 		
+        circle(result, p, 1,Scalar(255,0, 0));
 		Mat_<Point2f> points(1,1), dst(1,1);
 		points(0) = Point2f(p.x,p.y);
 		undistortPoints(points, dst, distortmtx, distortdist);
 		//Point p = Point(*(r.begin<double>()).x,*(r.begin<double>()).y);
-		p.x = - dst(0).x * re_size.width;
-		p.y = - dst(0).y * re_size.height;
+		p.x = - dst(0).y * re_size.width;
+		p.y = - dst(0).x * re_size.height;
         circle(result, p, 1,Scalar(255, 255, 255));
         cout << "Point : " << p.x << " " << p.y << endl;
 
@@ -124,9 +127,8 @@ int main(int argc, char* argv[])
 		
 		Result dir;
 		{
-		dir = generateOutput(p, Point(p.x+sum.x,p.y+sum.y));
-		dir.angle *= -1;
-        cout << "vector : " << sum.x << " " << sum.y << " "<< "dir: " << dir.angle <<endl;
+			dir = generateOutput(p, Point(p.x+sum.x,p.y+sum.y));
+			cout << "vector : " << sum.x << " " << sum.y << " "<< "dir: " << dir.angle <<endl;
 		}
 
 		if(sum.x*sum.x > 10 || sum.y*sum.y > 10) {
@@ -144,7 +146,8 @@ int main(int argc, char* argv[])
 		imshow("origin", frame);	
 		imshow("subtract", temp);
 		imshow("result",result);
-		waitKey(100);
+		imshow("undistort_frame",undistort_frame);
+		waitKey(500);
 		
         int now_clock = clock();
         double speed = double(now_clock - prev_clock) / CLOCKS_PER_SEC;
