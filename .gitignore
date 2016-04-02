@@ -1,6 +1,3 @@
-#
-*.pyc
-
 # Compiled Object files
 *.slo
 *.lo
@@ -31,9 +28,10 @@
 *.app
 
 #swap files
-.swo
-.swap
-.gch
-.pyc
-.swm
-.swm
+*.swo
+*.swp
+*.swap
+*.gch
+*.pyc
+*.swm
+*.swn
