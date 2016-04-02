@@ -121,7 +121,7 @@ Result VideoHandle::getDirectionPoints()
     Mat prev;
     vector<Point> List;
 
-	for (int i=10;i--;) getFrame();
+	for (int i=30;i--;) getFrame();
     prev = getFrame();
 
     while(true)
