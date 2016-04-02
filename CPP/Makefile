@@ -17,11 +17,18 @@ cv_chase: ./cv_chase.cpp
 	$(CXX) $< $(patsubst %cpp, %o, $(notdir $(wildcard ./catchtest/*.cpp))) -I $(INC) $(CXXFLAGS) -o $@
 	rm *.o
 
+.PHONY:vector
 vector: ./vector.cpp
+	$(CXX) $(SRC) -I $(INC) $(CXXFLAGS) -c
+	$(CXX) $< $(patsubst %cpp, %o, $(notdir $(wildcard ./catchtest/*.cpp))) -I $(INC) $(CXXFLAGS) -o $@
+	rm *.o
+
+.PHONY:vector_test
+vector_test: ./vector_test.cpp
 	$(CXX) $(SRC) -I $(INC) $(CXXFLAGS) -c
 	$(CXX) $< $(patsubst %cpp, %o, $(notdir $(wildcard ./catchtest/*.cpp))) -I $(INC) $(CXXFLAGS) -o $@
 	rm *.o
 
 .PHONY:clean
 clean:
-	rm main cv_chase vector
+	rm main cv_chase vector vector_test

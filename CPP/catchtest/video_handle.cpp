@@ -103,7 +103,7 @@ Result VideoHandle::getDirection()
         sum.y /= TIMES;
 
         cout << "vector : " << sum.x << " " << sum.y << endl;
-        if(sum.x*sum.x + sum.y*sum.y >= 30) {
+        if(sum.x*sum.x + sum.y*sum.y >= 30) {    //FIXME 建议修改为||关系
             Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
             ret.angle *= -1;
             return ret;
