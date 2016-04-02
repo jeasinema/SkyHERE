@@ -50,6 +50,8 @@ VideoHandle::VideoHandle(int device)
     }
     flag_select = false;
 	signal(SIGINT, &VideoRelease);
+    signal(SIGKILL, &VideoRelease);
+    signal(SIGHUP, &VideoRelease);
     cout << "install signal" << endl;
 }
 
