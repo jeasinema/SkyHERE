@@ -14,7 +14,7 @@ using namespace cv;
 extern Mat distortmtx;
 extern Mat distortdist;
 
-VideoCapture video_cap(0);
+VideoCapture video_cap("abc.avi");
 
 vector<Point> List;
 
@@ -70,8 +70,10 @@ int main(int argc, char* argv[])
     //prev = getUndistortFrame();
     prev = getFrame();
 
+    int index = 0;
     while(true)
     {
+        index ++;
         int prev_clock = clock();
 
         //frame = getUndistortFrame();
@@ -132,7 +134,7 @@ int main(int argc, char* argv[])
 		}
 
 		if(sum.x*sum.x > 10 || sum.y*sum.y > 10) {
-			getchar();
+			//getchar(); // FIXME
 		}
        //     Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
        //     car.sendCmd(80, -ret.angle);
@@ -147,7 +149,19 @@ int main(int argc, char* argv[])
 		imshow("subtract", temp);
 		imshow("result",result);
 		imshow("undistort_frame",undistort_frame);
-		waitKey(500);
+
+        {
+            char name[1024];
+            sprintf(name, "origin%d.png", index);
+            imwrite(name, frame);
+            sprintf(name, "substract%d.png", index);
+            imwrite(name, temp);
+            sprintf(name, "result%d.png", index);
+            imwrite(name, result);
+            sprintf(name, "un_frame%d.png", index);
+            imwrite(name, undistort_frame);
+        }
+		waitKey(10);
 
         int now_clock = clock();
         double speed = double(now_clock - prev_clock) / CLOCKS_PER_SEC;

@@ -143,11 +143,11 @@ Result VideoHandle::getDirectionPoints()
         Moments m = ::moments(temp);
         Point p = Point(m.m10/m.m00, m.m01/m.m00);
 
-		Mat_<Point2f> points(1,1), dst(1,1);
-		points(0) = Point2f(p.x,p.y);
-		undistortPoints(points, dst, distortmtx, distortdist);
-		p.x = - dst(0).y * size.width;
-		p.y = - dst(0).x * size.height;
+		// Mat_<Point2f> points(1,1), dst(1,1);
+		// points(0) = Point2f(p.x,p.y);
+		// undistortPoints(points, dst, distortmtx, distortdist);
+		// p.x = - dst(0).y * size.width;
+		// p.y = - dst(0).x * size.height;
         cout << "Point : " << p.x << " " << p.y << endl;
 
         List.push_back(p);
@@ -156,7 +156,7 @@ Result VideoHandle::getDirectionPoints()
             List.clear();
         }
 
-        const int TIMES = 2;
+        const int TIMES = 3;
         Point sum = Point(0, 0);
         for(int i=1;i<=TIMES;i++)
         {
