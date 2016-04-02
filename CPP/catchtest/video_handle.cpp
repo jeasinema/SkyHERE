@@ -175,8 +175,6 @@ Result VideoHandle::getDirectionPoints()
         if(abs(sum.x) > 3 || abs(sum.y) > 3) {
             Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
             ret.angle *= -1;
-            ret.angle += 180;
-            while(ret.angle > 180) ret.angle -= 360;
             return ret;
         }
 
