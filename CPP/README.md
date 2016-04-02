@@ -1,3 +1,16 @@
+#TODO
+
+    TIMES
+
+    morphlogy kernal
+
+    动态中心
+
+    画幅
+
+    图像去边框
+
+    向量长度
 
 #安装
 

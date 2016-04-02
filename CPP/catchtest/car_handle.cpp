@@ -1,4 +1,7 @@
 #include "car_handle.h"
+#include <cstdlib>
+
+using namespace std;
 
 CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 {
@@ -45,7 +48,10 @@ CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 
 int CarHandle::sendCmd(int speed, int angle)
 {
-	if (speed == 0) angle = prev_angle;
+	if (speed == 0) {
+		angle = prev_angle;
+		speed = max(0, prev_speed - 10);
+	}
 	prev_speed = speed;
 	prev_angle = angle;
 
