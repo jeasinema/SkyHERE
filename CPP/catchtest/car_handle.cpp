@@ -51,7 +51,7 @@ int CarHandle::sendCmd(int speed, int angle)
 {
 	if (speed == 0) {
 		angle = prev_angle;
-		speed = max(0, prev_speed - 10);
+		speed = max(0, prev_speed - 5);
 	}
 	prev_speed = speed;
 	prev_angle = angle;

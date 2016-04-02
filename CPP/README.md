@@ -14,6 +14,8 @@
 
     落点在前方
 
+    下位机保护代码
+
 #安装
 
     sudo apt-get install libopencv-dev
