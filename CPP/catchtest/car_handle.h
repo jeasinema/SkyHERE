@@ -22,7 +22,6 @@ public:
 		if (serial) {
 			close(serial);
 		}
-		delete this;
 	}
 	int sendCmd(int speed, int angle);
 private:
