@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 
     cout << "dir : " << dir.angle << " " << dir.length << endl;
 
+	int zero_times = 0;
     while(true) {
         cam.getImage();
         cam.prehandleImage(re_size);
@@ -50,9 +51,12 @@ int main(int argc, char* argv[])
 			}
             result = cam.generateOutput(Point(re_size.width/2,re_size.height/2+center_delta), Point(cam.centerx,cam.centery));
 	        result.angle *= -1;
+			zero_times = 0;
         } else {
             result = Result(result.angle, 0);
+			zero_times ++;
         }
+		if(zero_times > 40) break;
         //imshow("catch", cam.mask);
 		//imshow("origin", cam.frame);
         //waitKey(1);
