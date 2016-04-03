@@ -15,6 +15,9 @@
     落点在前方
 
     下位机保护代码
+		-> Systick Interrupts中设置累加器，UART Interrupts中置零，当累加至一定大小时自动停车。
+
+	运动电机PID -> 上位机完成
 
 #安装
 

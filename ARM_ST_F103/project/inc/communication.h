@@ -9,6 +9,9 @@
 
 #define Buffer_Size 20
 
+extern uint16_t stop_protect;
+extern uint8_t stop_protect_buff[Buffer_Size];
+
 extern uint8_t Cmd_Ble[Buffer_Size];
 extern uint8_t Buff_Ble[20];
 

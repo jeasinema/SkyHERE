@@ -4,11 +4,10 @@
 
 VideoHandle* VideoHandle::instance = new VideoHandle();
 
-void VideoRelease(int)
+void VideoRelease:Release()
 {
-    VideoHandle* ins = VideoHandle::getInstance();
-	if (ins->cap->isOpened()) {
-		ins->cap->release();
+	if (camera->cap->isOpened()) {
+		camera->cap->release();
 		cout << "camera has been released." << endl;
 	}
     exit(0);
@@ -40,6 +39,7 @@ extern Mat distortdist = (Mat_<double>(1,5) << -0.70529664,  0.62594239, -0.0028
 
 VideoHandle::VideoHandle(int device)
 {
+	
 	cap = new VideoCapture(device);
     if (cap->isOpened()) {
         camerawidth = (int)cap->get(CV_CAP_PROP_FRAME_WIDTH);
