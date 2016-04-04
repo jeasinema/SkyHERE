@@ -30,7 +30,7 @@ public:
 private:
 	int serial;
 	int now_speed = 0;
-	float Kp = 0;
+	float Kp = 0.4;
 	int now_time = 0, pre_time = 0;
 };
 

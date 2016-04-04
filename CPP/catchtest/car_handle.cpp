@@ -5,13 +5,14 @@
 #include <thread>
 
 #define MAX_PID_OUTPUT                       100
-#define INTERRUPT_DELAY						 100
+#define INTERRUPT_DELAY						 30000
 
 using namespace std;
 
 CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 {
 	thread pid_interrupts (&CarHandle::scheduler,this);
+	pid_interrupts.detach();
 	int USB = open(serialName, O_RDWR| O_NOCTTY);
 	struct termios tty;
 	struct termios tty_old;
@@ -86,7 +87,9 @@ void CarHandle::generateSpeed()
 	} else if (output < -MAX_PID_OUTPUT) {
 	    output = -MAX_PID_OUTPUT;
 	}
-
+	if(!output) {
+		output = 1;
+	}
 	now_speed += output;
 	if (now_speed > MAX_PID_OUTPUT) {
 		now_speed = MAX_PID_OUTPUT;
@@ -98,10 +101,11 @@ void CarHandle::generateSpeed()
 void CarHandle::scheduler()
 {
 	while(true) {
-		pre_time = now_time;
 		now_time = clock();
 		if (((now_time - pre_time) % INTERRUPT_DELAY) == 0) {
-			thread generateOutput (&CarHandle::generateSpeed,this);
+			thread genOutput (&CarHandle::generateSpeed,this);
+			genOutput.join();
+			pre_time = now_time;
 		}
 	}
 
