@@ -24,9 +24,14 @@ public:
 		}
 	}
 	int sendCmd(int speed, int angle);
+	void generateSpeed();
+	void scheduler();
+	int targetSpeed = 0, targetAngle = 0, PWM = 0;
 private:
 	int serial;
-    int prev_speed, prev_angle;
+	int now_speed = 0;
+	float Kp = 0;
+	int now_time = 0, pre_time = 0;
 };
 
 #endif // CARHANDLE_H

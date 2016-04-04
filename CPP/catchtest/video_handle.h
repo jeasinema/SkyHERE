@@ -15,7 +15,6 @@ class VideoHandle
 private:
     VideoHandle(int device = 0);
 public:
-	friend class VideoRelease;
 	~VideoHandle(){}
 //	{
 //		if (VideoHandle::cap->isOpened())
@@ -53,16 +52,5 @@ private:
     Mat getUndistortFrame();
     Mat getFrame();
 };
-
-class VideoRelease
-{
-public:
-	VideoRelease();
-	~VideoRelease();
-	friend class VideoHandle;
-	VideoHandle *camera;
-	static void Release();
-};
-
 
 #endif // VIDEOHANDLE_H

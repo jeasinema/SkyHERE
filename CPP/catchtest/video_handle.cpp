@@ -4,11 +4,12 @@
 
 VideoHandle* VideoHandle::instance = new VideoHandle();
 
-void VideoRelease:Release()
+void VideoRelease(int)
 {
-	if (camera->cap->isOpened()) {
-		camera->cap->release();
-		cout << "camera has been released." << endl;
+	VideoHandle* ins = VideoHandle::getInstance();
+	if (ins->cap->isOpened()) {
+		ins->cap->release();
+		cout << "camera has been released" << endl;
 	}
     exit(0);
 }
@@ -31,15 +32,14 @@ void onMouse(int event, int x, int y, int, void* h)
     cout << x << " " << y << " " << handle->select_color << " " << handle->select_color_hsv << endl;
 }
 
-extern Mat distortmtx = (Mat_<double>(3,3)<<
+Mat distortmtx = (Mat_<double>(3,3)<<
     411.8740606 ,    0.0        ,  303.41061317,
     0.0         ,  409.43354707 ,  253.78413993,
     0.0         ,    0.0        ,    1.0        );
-extern Mat distortdist = (Mat_<double>(1,5) << -0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423);
+Mat distortdist = (Mat_<double>(1,5) << -0.70529664,  0.62594239, -0.00286203, -0.00662238, -0.29993423);
 
 VideoHandle::VideoHandle(int device)
 {
-	
 	cap = new VideoCapture(device);
     if (cap->isOpened()) {
         camerawidth = (int)cap->get(CV_CAP_PROP_FRAME_WIDTH);
