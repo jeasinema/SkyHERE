@@ -13,9 +13,11 @@ using namespace std;
 int main()
 {
 	CarHandle *car = new CarHandle();
-	while(1) {
-		car->targetSpeed = 100;
-		car->targetAngle = 30;
-	}	
+	car->targetSpeed = 40;
+    car->targetAngle = 0;
+	sleep(1);
+    car->targetSpeed = 0;
+    sleep(1);
+	return 0;
 }
 

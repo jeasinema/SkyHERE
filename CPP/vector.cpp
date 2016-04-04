@@ -28,8 +28,10 @@ int main(int argc, char* argv[])
     cout << "start now" << endl;
 
     Result dir = cam.getDirectionPoints();
-    car.sendCmd(80, dir.angle);
-    usleep(20 * 1000);
+    //car.sendCmd(80, dir.angle);
+    car.targetSpeed = 80;
+	car.targetAngle = dir.angle;
+	usleep(20 * 1000);
 
     cout << "dir : " << dir.angle << " " << dir.length << endl;
 
@@ -90,7 +92,9 @@ int main(int argc, char* argv[])
         }
         cout << angle << " " << speed << " (" << cam.centerx << "," << cam.centery << ")" << "," << cam.moments.m00 << "," << center_delta + re_size.height/2 << endl;
 		cout << "length : " << result.length << endl;
-		car.sendCmd(speed, angle); //angle is reerse from the vision of the car
+		car.targetSpeed(speed);
+		car.targetAngle(angle);
+		//car.sendCmd(speed, angle); //angle is reerse from the vision of the car
     }
     return 0;
 }

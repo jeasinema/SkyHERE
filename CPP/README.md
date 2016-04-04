@@ -16,9 +16,10 @@
 
     下位机保护代码
 		-> Systick Interrupts中设置累加器，UART Interrupts中置零，当累加至一定大小时自动停车。
+		-> DONE
 
 	运动电机PID -> 上位机完成
-		-> 
+		->  DONE
 
 #安装
 
@@ -46,5 +47,6 @@
 	make main & ./main   #测试摄像头
 	make cv_chase & ./cv_chase  #调整色彩捕获算法
 	make vector_test & ./vector_test #测试运动预测算法
+	make car_test & ./car_test #测试上位机pid
 	make vector & ./vector  #主程序运行
 	
