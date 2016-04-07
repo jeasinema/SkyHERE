@@ -1,6 +1,6 @@
 CXXFLAGS := $(shell pkg-config --cflags --libs opencv)
 CXXFLAGS += -std=c++11
-CXX := g++
+CXX := g++-5
 
 all: main cv_chase vector
 
