@@ -4,10 +4,16 @@
 #include "stm32f10x_usart.h"
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_dma.h"
+#include "core_cm3.h"
 #include <stdarg.h>
 
 
-uint8_t Cmd_Ble[Buffer_Size] = "#000-N*";
+uint16_t stop_protect = 0;
+uint8_t stop_protect_buff[Buffer_Size] = "#0-0*";
+
+uint8_t Cmd_Ble[Buffer_Size] = "#000-000*";
+
+
 /*
   #089-C*
   C-Clockwise
@@ -154,6 +160,7 @@ void USART3_Config(void)
 }
 
 
+
 void USART3_IRQHandler(void)
 {
 	uint8_t tmp;
@@ -172,8 +179,14 @@ void USART3_IRQHandler(void)
 		{
 			memcpy(Cmd_Ble, Buff_Ble, Buffer_Size);
 			order = 0;
+
+			stop_protect = 0;
 			//USART_SendData(USART3, 'b');
 			//USART1_printf(USART3,Cmd_Ble);
+		}
+		if(tmp == '$')    //增加软复位 trick
+		{
+			 NVIC_SystemReset();
 		}
 	}
 	USART_ClearITPendingBit(USART3,USART_IT_RXNE);

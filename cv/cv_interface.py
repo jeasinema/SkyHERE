@@ -1,4 +1,4 @@
-# -*- coding:UTF-8 -*- 
+# -*- coding:UTF-8 -*-
 import cv2
 import cv
 import numpy as np
@@ -78,6 +78,7 @@ class videoHandle:
         
         while(self.flag_select):
             self.get_image()
+            self.frame = cv2.undistort(self.frame, self.distortmtx, self.distortdist)
             self.show_image('select_color')
         if self.is_set(self.selectx, self.selecty, self.select_color_hsv):
             print self.selectx, self.selecty
@@ -128,8 +129,8 @@ class videoHandle:
     @decos(1)
     def prehandle_image(self, *args, **kwargs):
         """
-        args = ((size_x,size_y))
-        default = ((vedioHandle.camerawidth,vedioHandle.cameraheight))
+        kwargs = {'size':(size_x, size_y)}
+        default = {'size': (vedioHandle.camerawidth,vedioHandle.cameraheight)}
         """
         try:
             if kwargs['dicvalid']:
@@ -148,25 +149,27 @@ class videoHandle:
 
         #undistort
         self.frame = cv2.undistort(self.frame, self.distortmtx, self.distortdist)
-
-        #2HSV
-        self.frame_hsv = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
         
         #resize
-        self.frame_resize_hsv = cv2.resize(self.frame_hsv,size)
+        self.frame_resize = cv2.resize(self.frame,size)
+      
+        #2HSV
+        self.frame_resize_hsv = cv2.cvtColor(self.frame_resize, cv2.COLOR_BGR2HSV)
+        
         #threshold
         self.thresholdlow = np.array((self.select_color_hsv[0]-20, 120, 80))
         self.thresholdhigh = np.array((self.select_color_hsv[0]+20, 255, 255))
         self.mask = cv2.inRange(self.frame_resize_hsv, self.thresholdlow, self.thresholdhigh)
         
         #morphlogy
-        self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_OPEN, np.ones((7,7), np.uint8))
+        self.mask = cv2.morphologyEx(self.mask, cv2.MORPH_OPEN, np.ones((3,3), np.uint8))
     
     @decos(0)
     def findcenter_image(self,*args, **kwargs):
         """
         args = ()
         default = ()
+        find the center of cam.mask
         """
         self.moments = cv2.moments(self.mask)
         
@@ -174,8 +177,8 @@ class videoHandle:
             self.centerx= (int)((float)(self.moments['m10'])/(float)(self.moments['m00']))
             self.centery= (int)((float)(self.moments['m01'])/(float)(self.moments['m00']))
         else:
-            self.centerx = 320 
-	    self.centery = 240
+            self.centerx = self.camerawidth/2
+	    self.centery = self.cameraheight/2
         self.centerx = self.centerx
         self.centery = self.centery
     
@@ -211,7 +214,7 @@ class videoHandle:
                 else:
                     angle - 90
             else:        
-                angle = np.arctan(((float)((p2['x'])-p1['x']))/((float)(p1['y']-p2['y'])))
+                angle = np.arctan(((float)((p2['x'])-p1['x']))/((float)(p1['y']-p2['y'])))  #xaxis is reverse
                 angle = (float)(angle) / cmath.pi * 180
                 if (p2['y'] > p1['y']):
                     if (p2['x'] > p1['x']):

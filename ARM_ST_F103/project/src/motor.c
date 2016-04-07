@@ -260,14 +260,14 @@ void Car_Turn_Speed(int speed)
 	if(speed > 0)
 	{
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
-		TIM_SetCompare1(TIM1, speed);
+		TIM_SetCompare1(TIM1, speed+200);   //死区约为200
 		TIM_SetCompare2(TIM1, 0);
 	}
 	else if (speed < 0)
 	{
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
 		TIM_SetCompare1(TIM1, 0);
-		TIM_SetCompare2(TIM1, -speed);
+		TIM_SetCompare2(TIM1, -speed-200);
 	}
 	else 
 	{

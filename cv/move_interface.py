@@ -43,17 +43,4 @@ class carHandle:
             self.serial_device.write("#"+(str)(speed)+"-"+(str)(angle)+"*")
         except srial.serialutil.SerialException:
             print "transfer failed."
-    
-    @decos(2)
-    def wait_button(self, *args, **kwargs):
-        """
-        args = (wait_time, wait_what)
-        default = (0,'o')
-        """
-        if kwargs['tupvalid']:
-            while(cv2.waitKey(args[0]) &  0xFF == ord((str)(args[1]))):
-                pass
-        else:
-            while(cv2.waitKey(0) & 0xFF == ord((str)('o'))):
-                pass
-
+ 
