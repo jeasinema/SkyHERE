@@ -14,7 +14,7 @@ using namespace cv;
 extern Mat distortmtx;
 extern Mat distortdist;
 
-VideoCapture video_cap("abc.avi");
+VideoCapture video_cap("front.avi");
 
 vector<Point> List;
 
@@ -82,8 +82,9 @@ int main(int argc, char* argv[])
 		undistort(frame, undistort_frame, distortmtx, distortdist);
         if(frame.empty()) break;
 
-        Mat temp;
+        Mat temp, temp_substract;
         subtract(prev, frame, temp);
+		temp_substract = temp.clone();
         resize(temp, temp, re_size, 0, 0, CV_INTER_LINEAR);
         cvtColor(temp, temp, CV_BGR2GRAY);
         threshold(temp, temp, 20, 255, CV_THRESH_BINARY);
@@ -96,14 +97,14 @@ int main(int argc, char* argv[])
 
         Point p = Point(m.m10/m.m00, m.m01/m.m00);
 
-        circle(result, p, 1,Scalar(255,0, 0));
-		Mat_<Point2f> points(1,1), dst(1,1);
-		points(0) = Point2f(p.x,p.y);
-		undistortPoints(points, dst, distortmtx, distortdist);
+        circle(result, p, 5,Scalar(0, 0, 255));
+		//Mat_<Point2f> points(1,1), dst(1,1);
+		//points(0) = Point2f(p.x,p.y);
+		//undistortPoints(points, dst, distortmtx, distortdist);
 		//Point p = Point(*(r.begin<double>()).x,*(r.begin<double>()).y);
-		p.x = - dst(0).y * re_size.width;
-		p.y = - dst(0).x * re_size.height;
-        circle(result, p, 1,Scalar(255, 255, 255));
+		//p.x = - dst(0).y * re_size.width;
+		//p.y = - dst(0).x * re_size.height;
+        //circle(result, p, 1,Scalar(255, 255, 255));
         cout << "Point : " << p.x << " " << p.y << endl;
 
         List.push_back(p);
@@ -133,8 +134,8 @@ int main(int argc, char* argv[])
 			cout << "vector : " << sum.x << " " << sum.y << " "<< "dir: " << dir.angle <<endl;
 		}
 
-		if(sum.x*sum.x > 10 || sum.y*sum.y > 10) {
-			//getchar(); // FIXME
+		if(sum.x*sum.x > 4 || sum.y*sum.y > 4) {
+			getchar(); // FIXME
 		}
        //     Result ret = generateOutput(p, Point(p.x+sum.x, p.y+sum.y));
        //     car.sendCmd(80, -ret.angle);
@@ -144,11 +145,12 @@ int main(int argc, char* argv[])
        //     sleep(1);
        //     exit(0);
        // }
-        line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(100, 100, 100));
+        line(result, p, Point(p.x+sum.x,p.y+sum.y), Scalar(0, 255, 0),2);
 		imshow("origin", frame);
 		imshow("subtract", temp);
 		imshow("result",result);
 		imshow("undistort_frame",undistort_frame);
+		imshow("subtract_frame", temp_substract);
 
         {
             char name[1024];
