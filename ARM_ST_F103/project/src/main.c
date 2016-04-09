@@ -13,8 +13,7 @@
 #define speed_fac   1  //由差值计算速度时的系数
 #define BOTTOMIMPROVE    //串口通信不畅，直接在底层实现转角的优化
 
-
-
+int stop_protect_val = 60;
 
 int speed;
 int turn;
@@ -57,7 +56,7 @@ int main()
 	Encoder_Init();
 	//while(1);
 	Motor_Init();
-	//SysTick_Init(72);
+	SysTick_Init(72);
 	Car_Run_Speed(0);
 	while(!Start_Due)
 	{
@@ -171,6 +170,7 @@ int main()
 		{
 			Car_Run(speed);
 		}
+		stop_protect_val  = (130 - abs(speed)) > 60?60:(130-abs(speed));
 		//Car_Turn(1);
 		//#endif
 
@@ -223,8 +223,11 @@ void SysTick_Init(uint8_t SYSCLK)
 
 void SysTick_Handler()
 {
-	
-	Speed_Query();
+	stop_protect++;
+	if (stop_protect > stop_protect_val && speed != 0) {
+		memcpy(Cmd_Ble, stop_protect_buff, 20);
+	}
+	//Speed_Query();
 	Angle_Query();
 
 	

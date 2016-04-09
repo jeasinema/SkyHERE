@@ -1,5 +1,6 @@
 CXXFLAGS := $(shell pkg-config --cflags --libs opencv)
-CXX := g++
+CXXFLAGS += -std=c++11
+CXX := g++-5
 
 all: main cv_chase vector
 
@@ -29,6 +30,13 @@ vector_test: ./vector_test.cpp
 	$(CXX) $< $(patsubst %cpp, %o, $(notdir $(wildcard ./catchtest/*.cpp))) -I $(INC) $(CXXFLAGS) -o $@
 	rm *.o
 
+.PHONY:car_test
+car_test: ./car_test.cpp
+	$(CXX) $(SRC) -I $(INC) $(CXXFLAGS) -c
+	$(CXX) $< $(patsubst %cpp, %o, $(notdir $(wildcard ./catchtest/*.cpp))) -I $(INC) $(CXXFLAGS) -o $@
+	rm *.o
+
+
 .PHONY:clean
 clean:
-	rm main cv_chase vector vector_test
+	rm main cv_chase vector vector_test car_test

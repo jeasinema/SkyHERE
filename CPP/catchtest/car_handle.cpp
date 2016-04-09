@@ -1,11 +1,18 @@
 #include "car_handle.h"
 #include <cstdlib>
 #include <cstdio>
+#include <ctime>
+#include <thread>
+
+#define MAX_PID_OUTPUT                       100
+#define INTERRUPT_DELAY						 30000
 
 using namespace std;
 
 CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 {
+	thread pid_interrupts (&CarHandle::scheduler,this);
+	pid_interrupts.detach();
 	int USB = open(serialName, O_RDWR| O_NOCTTY);
 	struct termios tty;
 	struct termios tty_old;
@@ -43,18 +50,16 @@ CarHandle::CarHandle(const char *serialName, speed_t baudrate)
 		std::cout << "Error " << errno << " from tcsetattr" << std::endl;
 	}
 	serial = USB;
-
-	prev_speed = prev_angle = 0;
 }
 
 int CarHandle::sendCmd(int speed, int angle)
 {
-	if (speed == 0) {
-		angle = prev_angle;
-		speed = max(0, prev_speed - 5);
-	}
-	prev_speed = speed;
-	prev_angle = angle;
+//	if (speed == 0) {
+//		angle = prev_angle;
+//		speed = max(0, prev_speed - 5);   //防止接取过程中偶尔出现的0速度导致的刹车问题
+//	}
+//	prev_speed = speed;
+//	prev_angle = angle;
 
 	printf("[cmd] speed: %d angle: %d\n", speed, angle);
 
@@ -67,4 +72,41 @@ int CarHandle::sendCmd(int speed, int angle)
 	    spot += n_written;
 	} while (cmd[spot-1] != '\r' && n_written > 0);
 	return 1;
+}
+
+void CarHandle::generateSpeed()
+{
+	int output,error;
+	error = targetSpeed - now_speed;	
+
+	output = Kp * error;
+
+	// Limit the maximum output
+	if (output > MAX_PID_OUTPUT) {
+	    output = MAX_PID_OUTPUT;
+	} else if (output < -MAX_PID_OUTPUT) {
+	    output = -MAX_PID_OUTPUT;
+	}
+	if(!output) {
+		output = 1;
+	}
+	now_speed += output;
+	if (now_speed > MAX_PID_OUTPUT) {
+		now_speed = MAX_PID_OUTPUT;
+	}
+	PWM = now_speed;
+	sendCmd(PWM, targetAngle);
+}
+
+void CarHandle::scheduler()
+{
+	while(true) {
+		now_time = clock();
+		if (((now_time - pre_time) % INTERRUPT_DELAY) == 0) {
+			thread genOutput (&CarHandle::generateSpeed,this);
+			genOutput.join();
+			pre_time = now_time;
+		}
+	}
+
 }
